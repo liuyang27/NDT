@@ -1,0 +1,12 @@
+<p>pores works!</p>
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <b>PORES</b>
+    <span class="spacer"></span>
+    <a class="subnav" [routerLink]="[ './about' ]" routerLinkActive="active">About</a>
+    <a class="subnav" [routerLink]="[ './train' ]" routerLinkActive="active">Train Model</a>
+    <a class="subnav" [routerLink]="[ './predict' ]" routerLinkActive="active">Predict</a>
+    <a class="subnav" [routerLink]="[ '/models' ]" routerLinkActive="active">Back</a>
+  </mat-toolbar-row>
+</mat-toolbar>
+<router-outlet></router-outlet>

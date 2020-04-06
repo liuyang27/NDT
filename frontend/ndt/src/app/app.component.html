@@ -1,0 +1,75 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <button mat-icon-button (click)="drawer.toggle()">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <span>Defect Detection System</span>
+    <mat-icon class="example-icon" aria-hidden="false">verified_user</mat-icon>
+    <span class="spacer"></span>
+
+
+    <!-- user settings for future added -->
+    <button mat-icon-button [matMenuTriggerFor]="settings">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #settings="matMenu">
+      <button mat-menu-item>
+        <mat-icon>dialpad</mat-icon>
+        <span>Redial</span>
+      </button>
+      <button mat-menu-item disabled>
+        <mat-icon>voicemail</mat-icon>
+        <span>Check voice mail</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>notifications_off</mat-icon>
+        <span>Disable alerts</span>
+      </button>
+    </mat-menu>
+    <!-- end of user settings  -->
+  </mat-toolbar-row>
+</mat-toolbar>
+
+
+<mat-drawer-container class="main-container" autosize>
+  <!-- side navigator -->
+  <mat-drawer #drawer class="sidenav" mode="side">
+    <mat-nav-list>
+      <mat-list-item>
+        <a matLine href="/models"><span class="material-icons">dashboard</span> Models</a>
+      </mat-list-item>
+
+      <mat-list-item>
+        <a matLine href="/manage"><span class="material-icons">control_camera</span> Manage Models</a>
+      </mat-list-item>
+
+      <mat-list-item>
+        <a matLine href="/addNewModel"><span class="material-icons">add_box</span> Add New Model</a>
+      </mat-list-item>
+
+
+      <!-- <mat-list-item>
+        <a matLine href="#">test</a>
+        <button mat-icon-button>
+          <mat-icon>info</mat-icon>
+        </button>
+      </mat-list-item> -->
+    </mat-nav-list>
+  </mat-drawer>
+  <!-- end of side navigator -->
+
+  <!-- <div class="example-sidenav-content">
+    <button type="button" mat-button (click)="drawer.toggle()">
+      Toggle sidenav
+    </button>
+    <mat-list>
+      <mat-list-item> <a [routerLink]="[ '/pores' ]">Pores</a> </mat-list-item>
+      <mat-list-item> <a [routerLink]="[ '/cracks' ]">Cracks</a>  </mat-list-item>
+     </mat-list>
+  </div> -->
+
+  <router-outlet></router-outlet>
+ 
+  
+
+</mat-drawer-container>
