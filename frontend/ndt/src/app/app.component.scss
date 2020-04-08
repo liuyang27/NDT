@@ -11,3 +11,15 @@
   .spacer {
     flex: 1 1 auto;
   }
+
+  h1 {
+    text-transform: uppercase;
+    padding: 25px;
+    background-color:#2087a7;
+    color: rgb(255, 255, 255);
+  }
+
+  .mat-toolbar.mat-primary {
+    background: #5a6988;
+    color: #fff;
+  }

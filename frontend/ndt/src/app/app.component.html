@@ -31,6 +31,15 @@
 </mat-toolbar>
 
 
+<div  style="display:inline; white-space:nowrap;flex: 1 1 auto;"> 
+  <h1>
+    <span>Learning based XCT Image Defect Detection</span> 
+    <img src="assets/images/artclogo.png" style=" max-width:230px; max-height:95px;  width: auto; height: auto;margin-left: 30px;"/>
+    <img src="assets/images/crplogo.png" />
+  </h1>
+</div>
+
+
 <mat-drawer-container class="main-container" autosize>
   <!-- side navigator -->
   <mat-drawer #drawer class="sidenav" mode="side">
@@ -57,17 +66,7 @@
     </mat-nav-list>
   </mat-drawer>
   <!-- end of side navigator -->
-
-  <!-- <div class="example-sidenav-content">
-    <button type="button" mat-button (click)="drawer.toggle()">
-      Toggle sidenav
-    </button>
-    <mat-list>
-      <mat-list-item> <a [routerLink]="[ '/pores' ]">Pores</a> </mat-list-item>
-      <mat-list-item> <a [routerLink]="[ '/cracks' ]">Cracks</a>  </mat-list-item>
-     </mat-list>
-  </div> -->
-
+ 
   <router-outlet></router-outlet>
  
   

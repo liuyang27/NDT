@@ -13,7 +13,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-mongoose.connect('mongodb://localhost:27017/NDT');
+mongoose.connect('mongodb://localhost:27017/NDT',{ useNewUrlParser: true, useUnifiedTopology: true });
 // mongoose.connect("mongodb+srv://binny_01:binny01@cluster0-ziirr.gcp.mongodb.net/EventManagementSystem?retryWrites=true&w=majority");
 // mongoose.connect('mongodb://192.168.0.54/EventManagementSystem');
 
@@ -32,6 +32,7 @@ app.use(express.static("public"));
 app.use(function(req,res){
     res.send("404 page not found..");
 });
+
 
 app.listen(3000);
 console.log("server is running on port 3000..");

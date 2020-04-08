@@ -34,6 +34,7 @@ export class AddNewModelComponent implements OnInit {
     author: [],
     remarks: [],
     modelEnable: [false],
+    createdDate:[],
     trainingInputs: this.fb.array([]),
     predictInputs: this.fb.array([]),
   })
@@ -73,7 +74,7 @@ export class AddNewModelComponent implements OnInit {
 
 
   changeType(type,item){
-    console.log(type)
+    // console.log(type)
     if(type=="File" || type=="Number"){
        (item.get("options") as FormArray).clear();
        this.updateMaxChoice(item);
@@ -107,8 +108,9 @@ removeOption(item,index){
 }
 
   onSubmit(){
-    console.log(this.modelForm.value);
-    // alert("new event added.");
+    this.modelForm.get('createdDate').patchValue(new Date())
+    // console.log(this.modelForm.value);
+
     this._modelService.addNewModel(this.modelForm.value).subscribe(data=>{
       if(data.results==1){
         alert("new model added.");
@@ -122,7 +124,7 @@ removeOption(item,index){
 
 
   backToHome(){
-    this.router.navigate(['/models',]);
+    this.router.navigate(['/manage',]);
   }
 
 }

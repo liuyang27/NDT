@@ -8,6 +8,7 @@ import { PredictComponent } from './components/predict/predict.component';
 import { AboutComponent } from './components/about/about.component';
 import { AddNewModelComponent } from './components/add-new-model/add-new-model.component';
 import { ManageModelsComponent } from './components/manage-models/manage-models.component';
+import { EditModelComponent } from './components/edit-model/edit-model.component';
 
 
 const routes: Routes = [
@@ -16,6 +17,9 @@ const routes: Routes = [
   },
   {
     path:"manage",component:ManageModelsComponent,
+    children:[
+      {path:"editmodel",component:EditModelComponent}
+    ]
   },
   {
     path:"addNewModel",component:AddNewModelComponent,

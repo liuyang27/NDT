@@ -52,6 +52,7 @@ exports.showIndex = function (req, res) {
       "author": element.author,
       "remarks": element.remarks,
       "modelEnable": element.modelEnable,
+      "createdDate": element.createdDate,
       "trainingInputs": element.trainingInputs,
       "predictInputs": element.predictInputs,
       "__v": element.__v

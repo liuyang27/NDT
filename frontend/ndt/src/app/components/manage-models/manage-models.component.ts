@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class ManageModelsComponent implements OnInit {
 
-  displayedColumns: string[] = ['name', 'type', 'author','modelEnable','details'];
+  displayedColumns: string[] = ['name', 'type', 'author','modelEnable','createdDate','details'];
   dataSource;
 
   constructor(private modelService:ModelService,
@@ -25,15 +25,17 @@ export class ManageModelsComponent implements OnInit {
     this.modelService.getAllModels().subscribe(
       (data)=>{
           this.dataSource=new MatTableDataSource(data["results"]);
+          // console.log(data)
       })
   }
 
   showEdit(id){
     console.log(id)
+    this.router.navigate(['manage/editmodel',id]);
   }
 
   onDelete(id){
-    if(!confirm("Are you sure to delete this event? ")) {
+    if(!confirm("Are you sure to delete this Model? ")) {
       return;
     }
     this.modelService.deleteModelById(id).subscribe((data)=>{

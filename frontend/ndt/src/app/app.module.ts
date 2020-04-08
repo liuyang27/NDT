@@ -15,6 +15,7 @@ import { AddNewModelComponent } from './components/add-new-model/add-new-model.c
 import { ReactiveFormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http';
 import { ManageModelsComponent } from './components/manage-models/manage-models.component';
+import { EditModelComponent } from './components/edit-model/edit-model.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { ManageModelsComponent } from './components/manage-models/manage-models.
     PredictComponent,
     AboutComponent,
     AddNewModelComponent,
-    ManageModelsComponent
+    ManageModelsComponent,
+    EditModelComponent
   ],
   imports: [
     BrowserModule,

@@ -8,6 +8,7 @@ var modelSchema=new mongoose.Schema({
     author:String,
     remarks:String,
     modelEnable:Boolean,
+    createdDate:Date,
     trainingInputs:Array,
     predictInputs:Array,
 });

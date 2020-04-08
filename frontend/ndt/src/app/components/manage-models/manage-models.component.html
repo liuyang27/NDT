@@ -27,6 +27,11 @@
             <th mat-header-cell *matHeaderCellDef> Model Enable </th>
             <td mat-cell *matCellDef="let element"> {{element.modelEnable}} </td>
         </ng-container>
+
+        <ng-container matColumnDef="createdDate">
+            <th mat-header-cell *matHeaderCellDef> Created Date </th>
+            <td mat-cell *matCellDef="let element"> {{element.createdDate | date:'dd MMM y'}} </td>
+        </ng-container>
     
         <ng-container matColumnDef="details">
             <th mat-header-cell *matHeaderCellDef></th>
