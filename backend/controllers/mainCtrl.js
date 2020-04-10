@@ -42,7 +42,7 @@ var CNN_Model = require("../models/CNN_Model");
 
 
 exports.showIndex = function (req, res) {
-  console.log("Get all CNN models...........")
+  console.log("---------Get all CNN models-------------")
   CNN_Model.find({}, function (err, results) {
     results = results.map(element => ({
       "_id": element._id,
@@ -64,10 +64,11 @@ exports.showIndex = function (req, res) {
 
 
 
-exports.getEventDetail = function (req, res) {
-  console.log("getEventDetail...........")
-  var eid = req.params.eid;
-  Event.find({ "_id": eid }, function (err, results) {
+exports.getModelDetail = function (req, res) {
+  console.log("-----------GET Model Detail--------------")
+  var mid = req.params.mid;
+  console.log("Model ID:" + mid)
+  CNN_Model.find({ "_id": mid }, function (err, results) {
     if (err || results.length == 0) {
       res.json({ "results": -1 });
       return;
@@ -92,6 +93,7 @@ exports.doAddModel = function (req, res) {
       res.json({ "results": "-1" });
       return;
     }
+    console.log("New model added successful");
     res.json({ "results": "1" });
   });
 }
@@ -112,6 +114,7 @@ exports.doDeleteModel = function (req, res) {
         res.json({ "results": -1 });
         return;
       }
+      console.log("Model removed successful");
       res.json({ "results": 1 });
     })
   })
@@ -119,16 +122,19 @@ exports.doDeleteModel = function (req, res) {
 
 
 
-  exports.doEditEvent = function (req, res) {
-    console.log("------------------------Edit EVENT-----------------------------")
-    var eid = req.params.eid;
+  exports.doEditModel = function (req, res) {
+    console.log("------------------------Edit MODEL-----------------------------")
+    var mid = req.params.mid;
+    console.log("Model ID:" + mid)
     var body = req.body
-    Event.findOneAndUpdate({ "_id": eid }, body, { new: true }, function (err, results) {
+    CNN_Model.findOneAndUpdate({ "_id": mid }, body, { new: true }, function (err, results) {
 
       if (err) {
+        console.log(err)
         res.json({ "results": -1 });
         return;
       }
+      console.log("Model edited successful")
       res.json({ "results": 1 });
 
     })

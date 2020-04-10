@@ -17,9 +17,9 @@ const routes: Routes = [
   },
   {
     path:"manage",component:ManageModelsComponent,
-    children:[
-      {path:"editmodel",component:EditModelComponent}
-    ]
+  },
+  {
+    path:"manage/editmodel/:mid",component:EditModelComponent
   },
   {
     path:"addNewModel",component:AddNewModelComponent,

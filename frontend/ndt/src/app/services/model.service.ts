@@ -27,7 +27,15 @@ export class ModelService {
     return res;
   }
 
+  getModelById(mid):Observable<any>{
+    var res = this.http.get(this.Server_IP+"/model/"+mid);
+    return res;
+  }
 
+  editModel(mid,model):Observable<any>{
+    var res = this.http.put(this.Server_IP+"/model/"+ mid,model);
+    return res;
+  }
 
 
 

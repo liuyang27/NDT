@@ -13,7 +13,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-mongoose.connect('mongodb://localhost:27017/NDT',{ useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/NDT',{ useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 // mongoose.connect("mongodb+srv://binny_01:binny01@cluster0-ziirr.gcp.mongodb.net/EventManagementSystem?retryWrites=true&w=majority");
 // mongoose.connect('mongodb://192.168.0.54/EventManagementSystem');
 
@@ -21,9 +21,9 @@ mongoose.connect('mongodb://localhost:27017/NDT',{ useNewUrlParser: true, useUni
 app.get ("/model",                     mainCtrl.showIndex);
 // app.get("/sendemail",                  mainCtrl.sendEmail)
 app.post("/model",                     mainCtrl.doAddModel)
-// app.put("/event/:eid",                 mainCtrl.doEditEvent)
+app.put("/model/:mid",                 mainCtrl.doEditModel)
 app.delete("/model/:mid",              mainCtrl.doDeleteModel)
-// app.get("/event/:eid",                 mainCtrl.getEventDetail)
+app.get("/model/:mid",                 mainCtrl.getModelDetail)
 // app.post("/checkin",                   mainCtrl.checkin)
 
 

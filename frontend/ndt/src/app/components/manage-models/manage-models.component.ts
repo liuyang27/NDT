@@ -30,8 +30,8 @@ export class ManageModelsComponent implements OnInit {
   }
 
   showEdit(id){
-    console.log(id)
-    this.router.navigate(['manage/editmodel',id]);
+    // console.log(id)
+    this.router.navigate(['/manage/editmodel',id]);
   }
 
   onDelete(id){

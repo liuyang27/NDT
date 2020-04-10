@@ -1,1 +1,166 @@
-<p>edit-model works!</p>
+<h1>Edit Model</h1>
+<form [formGroup]="modelForm" (ngSubmit)="onSubmit()" *ngIf="modelForm">
+    <div class="example-container">
+        <mat-label>Name:</mat-label>
+        <mat-form-field appearance="outline">    
+        <input matInput placeholder="Model Name" class="full-width" formControlName="name" required>
+        </mat-form-field>
+
+        <mat-label>Defect Type:</mat-label>
+        <mat-form-field appearance="outline">    
+        <input matInput placeholder="Type" class="full-width" formControlName="type" required>
+        </mat-form-field>
+
+        <mat-label>Author:</mat-label>
+        <mat-form-field appearance="outline">    
+        <input matInput placeholder="Author" class="full-width" formControlName="author">
+        </mat-form-field>
+
+        <mat-label>About:</mat-label>
+        <mat-form-field>
+        <textarea matInput placeholder="about this model..." formControlName="about"></textarea>
+        </mat-form-field>
+
+        <mat-label>Remarks:</mat-label>
+        <mat-form-field>
+        <textarea matInput placeholder="remarks.." formControlName="remarks"></textarea>
+        </mat-form-field>
+
+
+        <mat-slide-toggle formControlName="modelEnable">Enable this model</mat-slide-toggle>
+      
+        <br><br>
+        <h2>Add Training Model Inputs</h2>
+
+        <div formArrayName="trainingInputs" *ngFor="let item of modelForm.get('trainingInputs')['controls']; let i = index;">
+            <div [formGroupName]="i">
+                <mat-card >
+                    <mat-card-header>
+                        <mat-card-title>Parameter {{i+1}}</mat-card-title>
+                       
+                        <button mat-flat-button color="warn" (click)="removeParameter(i,'train');$event.preventDefault()">Remove this Parameter</button>
+                    </mat-card-header>
+                
+                    <mat-card-content>
+                            <p>
+                                <mat-label>Name:</mat-label>
+                                <mat-form-field style="margin-left:5px">    
+                                    <input matInput placeholder=" Give a parameter name" class="full-width" formControlName="name" required>
+                                </mat-form-field>
+                            </p>
+                            <P>
+                                <mat-label>Type:</mat-label>
+                                <mat-form-field style="margin-left:5px">
+                                    <mat-label>choose a type</mat-label>
+                                    <mat-select  name="type" formControlName="type"  (ngModelChange)="changeType($event,item)" required>
+                                    <mat-option *ngFor="let type of inputParameterTypes" [value]="type">{{type}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </P>
+                            <p *ngIf="item.value.type=='CheckBox'">
+                                <mat-label>Maximum checkboxes allow to select:</mat-label>
+                                <mat-form-field style="margin-left:10px">
+                                <input matInput placeholder="Maximum choices" type="number" formControlName="maxChoice" min="1">
+                                </mat-form-field>
+                            </p>
+                            <div *ngFor="let option of item.get('options').controls; let optionIndex = index;" >   
+                                <div style="display: inline-flex" >
+                                <div formArrayName="options">
+                                        <mat-radio-button *ngIf="item.value.type=='RadioButton'" disabled></mat-radio-button>
+                                        <mat-checkbox *ngIf="item.value.type=='CheckBox'" disabled></mat-checkbox>
+                                        <mat-label *ngIf="item.value.type=='DropdownList'"><b>{{optionIndex}}. </b></mat-label>
+
+                                        <span *ngIf="item.value.type=='CheckBox' || item.value.type=='RadioButton' || item.value.type=='DropdownList'">
+                                            <mat-form-field style="margin-left:10px" >    
+                                            <input matInput placeholder="option {{optionIndex+1}}" class="example-full-width" [formControlName]="optionIndex" >
+                                            </mat-form-field>
+                                            
+                                        </span>
+
+                                </div>
+   
+                                <button mat-stroked-button color="warn" (click)="removeOption(item,optionIndex);$event.preventDefault()" style="margin-left:5px;height: 80%">Remove</button>  
+                            </div>  
+                        </div>
+                        <div>
+                                <button mat-flat-button color="primary" (click)="addOption(item);$event.preventDefault()" *ngIf="item.value.type=='CheckBox' || item.value.type=='RadioButton' || item.value.type=='DropdownList'">Add Option</button>
+                            </div>
+                    </mat-card-content>
+                
+                </mat-card>
+            </div>
+        </div>
+        <button mat-flat-button color="primary" style="width:30%;margin-top: 10px" (click)="addInputParameter('train');$event.preventDefault()">Add New Parameter</button>
+
+
+        <br><br>
+        <h2>Add Predict Model Inputs</h2>
+
+        <div formArrayName="predictInputs" *ngFor="let item of modelForm.get('predictInputs')['controls']; let i = index;">
+            <div [formGroupName]="i">
+                <mat-card >
+                    <mat-card-header>
+                        <mat-card-title>Parameter {{i+1}}</mat-card-title>
+                       
+                        <button mat-flat-button color="warn" (click)="removeParameter(i,'predict');$event.preventDefault()">Remove this Parameter</button>
+                    </mat-card-header>
+                
+                    <mat-card-content>
+                            <p>
+                                <mat-label>Name:</mat-label>
+                                <mat-form-field style="margin-left:5px">    
+                                    <input matInput placeholder=" Give a parameter name" class="full-width" formControlName="name" required>
+                                </mat-form-field>
+                            </p>
+                            <P>
+                                <mat-label>Type:</mat-label>
+                                <mat-form-field style="margin-left:5px">
+                                    <mat-label>choose a type</mat-label>
+                                    <mat-select  name="type" formControlName="type"  (ngModelChange)="changeType($event,item)" required>
+                                    <mat-option *ngFor="let type of inputParameterTypes" [value]="type">{{type}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </P>
+                            <p *ngIf="item.value.type=='CheckBox'">
+                                <mat-label>Maximum checkboxes allow to select:</mat-label>
+                                <mat-form-field style="margin-left:10px">
+                                <input matInput placeholder="Maximum choices" type="number" formControlName="maxChoice" min="1">
+                                </mat-form-field>
+                            </p>
+                            <div *ngFor="let option of item.get('options').controls; let optionIndex = index;" >   
+                                <div style="display: inline-flex" >
+                                <div formArrayName="options">
+                                        <mat-radio-button *ngIf="item.value.type=='RadioButton'" disabled></mat-radio-button>
+                                        <mat-checkbox *ngIf="item.value.type=='CheckBox'" disabled></mat-checkbox>
+                                        <mat-label *ngIf="item.value.type=='DropdownList'"><b>{{optionIndex}}. </b></mat-label>
+
+                                        <span *ngIf="item.value.type=='CheckBox' || item.value.type=='RadioButton' || item.value.type=='DropdownList'">
+                                            <mat-form-field style="margin-left:10px" >    
+                                            <input matInput placeholder="option {{optionIndex+1}}" class="example-full-width" [formControlName]="optionIndex" >
+                                            </mat-form-field>
+                                            
+                                        </span>
+
+                                </div>
+   
+                                <button mat-stroked-button color="warn" (click)="removeOption(item,optionIndex);$event.preventDefault()" style="margin-left:5px;height: 80%">Remove</button>  
+                            </div>  
+                        </div>
+                        <div>
+                            <button mat-flat-button color="primary" (click)="addOption(item);$event.preventDefault()" *ngIf="item.value.type=='CheckBox' || item.value.type=='RadioButton' || item.value.type=='DropdownList'">Add Option</button>
+                        </div>
+                    </mat-card-content>
+                
+                </mat-card>
+            </div>
+        </div>
+        <button mat-flat-button color="primary" style="width:30%;margin-top: 10px" (click)="addInputParameter('predict');$event.preventDefault()">Add New Parameter</button>
+    </div>
+    <br><br> {{modelForm.value | json}}
+    <div style="display: flex;justify-content:space-around;">
+        <button mat-flat-button color="primary" style="width:30%;" (click)="backToHome();$event.preventDefault()">Back</button>
+        <button mat-flat-button color="primary" style="width:30%;" [disabled]="!modelForm.valid">Save</button>
+    </div>
+    <br><br>
+
+</form>
