@@ -40,7 +40,7 @@
 </div>
 
 
-<mat-drawer-container class="main-container" autosize>
+<mat-drawer-container class="main-container" autosize disableClose>
   <!-- side navigator -->
   <mat-drawer #drawer class="sidenav" mode="side">
     <mat-nav-list>
@@ -56,18 +56,18 @@
         <a matLine href="/addNewModel"><span class="material-icons">add_box</span> Add New Model</a>
       </mat-list-item>
 
-
-      <!-- <mat-list-item>
-        <a matLine href="#">test</a>
-        <button mat-icon-button>
-          <mat-icon>info</mat-icon>
-        </button>
-      </mat-list-item> -->
     </mat-nav-list>
   </mat-drawer>
   <!-- end of side navigator -->
- 
-  <router-outlet></router-outlet>
+
+
+
+
+
+  <mat-drawer-content >
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+
  
   
 
