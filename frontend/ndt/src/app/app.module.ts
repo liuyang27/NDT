@@ -16,6 +16,8 @@ import { ReactiveFormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http';
 import { ManageModelsComponent } from './components/manage-models/manage-models.component';
 import { EditModelComponent } from './components/edit-model/edit-model.component';
+import { ModelDetailComponent } from './components/model-detail/model-detail.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,8 @@ import { EditModelComponent } from './components/edit-model/edit-model.component
     AboutComponent,
     AddNewModelComponent,
     ManageModelsComponent,
-    EditModelComponent
+    EditModelComponent,
+    ModelDetailComponent
   ],
   imports: [
     BrowserModule,
@@ -36,7 +39,8 @@ import { EditModelComponent } from './components/edit-model/edit-model.component
     BrowserAnimationsModule,
     MaterialModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

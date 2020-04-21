@@ -1,6 +1,25 @@
-
-<mat-list>
+<!-- <mat-list>
     <mat-list-item> <a [routerLink]="[ './pores' ]">Pores</a> </mat-list-item>
     <mat-list-item> <a [routerLink]="[ './cracks' ]">Cracks</a> </mat-list-item>
-</mat-list>
+</mat-list> -->
+
+<div class="main-content">
+
+    <div *ngFor="let model of modelList" class="model-block">
+        <a mat-raised-button routerLink="./{{model._id}}" class="model">
+            <div class="model" >
+                <p>
+                    Model: {{model.name}}
+                </p>
+                <p>
+                    Type: {{model.type}}
+                </p>
+            </div>
+     
+        </a>
+    </div>
+</div>
+
+
+
 <router-outlet></router-outlet>

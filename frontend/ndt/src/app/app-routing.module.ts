@@ -9,6 +9,7 @@ import { AboutComponent } from './components/about/about.component';
 import { AddNewModelComponent } from './components/add-new-model/add-new-model.component';
 import { ManageModelsComponent } from './components/manage-models/manage-models.component';
 import { EditModelComponent } from './components/edit-model/edit-model.component';
+import { ModelDetailComponent } from './components/model-detail/model-detail.component';
 
 
 const routes: Routes = [
@@ -23,6 +24,15 @@ const routes: Routes = [
   },
   {
     path:"addNewModel",component:AddNewModelComponent,
+  },
+  {
+    path:"models/:mid",component:ModelDetailComponent,
+    // children:[
+    //   {path:"about",component:AboutComponent,data: { modelData: 'modelData' }},
+    //   {path:"train",component:TrainModelComponent,data: { modelData: 'modelData' }},
+    //   {path:"predict",component:PredictComponent,data: { modelData: 'modelData' }},
+    //   {path:"**",redirectTo:"about"}
+    // ]
   },
   {
     path:"models/pores",component:PoresComponent,

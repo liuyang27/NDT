@@ -1,1 +1,9 @@
-<p>about works!</p>
+<div *ngIf="modelData">
+    <h1>NAME: {{modelData.name}}</h1><br>
+    <h2>TYPE: {{modelData.type}}</h2><br>
+    <h2>AUTHOR: {{modelData.author}}</h2><br>
+    <h1>ABOUT</h1>
+    <pre>{{modelData.about}}</pre><br>
+</div>
+
+

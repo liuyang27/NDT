@@ -21,6 +21,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatTabsModule} from '@angular/material/tabs';
 
 const MaterialComponents =[
   MatInputModule,
@@ -44,7 +45,8 @@ const MaterialComponents =[
   MatToolbarModule,
   MatSidenavModule,
   MatListModule,
-  MatMenuModule
+  MatMenuModule,
+  MatTabsModule,
 ];
 
 

@@ -1,0 +1,50 @@
+<div *ngIf="modelData" >
+<mat-tab-group class="example-stretched-tabs mat-elevation-z4"  mat-align-tabs="end">
+    <!-- <span><b>{{modelData.name}}aaaa</b></span>
+      
+    <span class="spacer"></span> -->
+    
+    <mat-tab label="About"> <app-about [modelData]="modelData"></app-about > </mat-tab>
+    <mat-tab label="Train Model"> <app-train-model [modelData]="modelData"></app-train-model> </mat-tab>
+    <mat-tab label="Predict"> <app-predict></app-predict> </mat-tab>
+    <mat-tab label="Back"> <div style="height: 100%;"><a class="subnav" [routerLink]="[ '/models' ]">Back</a></div> </mat-tab>
+  </mat-tab-group>
+
+<!-- [routerLink]="link.path" 
+   routerLinkActive #rla="routerLinkActive"
+       [active]="rla.isActive"
+
+       (click)="activeLink = link.label;test(link.path)"
+       [active]="activeLink == link.label"
+      -->
+  <!-- <nav mat-tab-nav-bar>
+    <h1>{{modelData.name}}</h1>
+    <span class="spacer"></span>
+    <a mat-tab-link
+       *ngFor="let link of navLinks"
+       (click)="test(link.label,link.path)"
+       [active]="activeLink == link.label">
+
+      {{link.label}}
+    </a>
+  </nav> -->
+
+  <br><br><br>
+
+    <!-- <mat-toolbar color="primary">
+        <mat-toolbar-row>
+          <b >{{modelData.name}}</b>
+          <span class="spacer"></span>
+          <a class="subnav" [routerLink]="[ './about' ]" routerLinkActive="active">About</a>
+          <a class="subnav" [routerLink]="[ './train' ]" routerLinkActive="active">Train Model</a>
+          <a class="subnav" [routerLink]="[ './predict' ]" routerLinkActive="active">Predict</a>
+          <a class="subnav" [routerLink]="[ '/models' ]" >Back</a>
+        </mat-toolbar-row>
+      </mat-toolbar> -->
+</div>
+
+
+  <br><br><br>
+
+  <router-outlet></router-outlet>
+

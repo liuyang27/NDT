@@ -1,0 +1,18 @@
+.main-content {
+    display: -webkit-flex; /* Safari */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    flex:0 1 auto;
+}
+.model-block{
+    margin:30px;
+    height: 200px;
+    width: 200px;
+}
+.model {
+    height:100%;
+    width: 100%;
+    vertical-align:middle;
+    text-align: center;
+}
