@@ -25,7 +25,7 @@ app.put("/model/:mid",                 mainCtrl.doEditModel)
 app.delete("/model/:mid",              mainCtrl.doDeleteModel)
 app.get("/model/:mid",                 mainCtrl.getModelDetail)
 // app.post("/checkin",                   mainCtrl.checkin)
-
+app.post("/model/train/:mid",          mainCtrl.doTrainModel)
 
 app.use(express.static("public"));
 

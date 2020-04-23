@@ -37,6 +37,11 @@ export class ModelService {
     return res;
   }
 
+  trainModel(mid,formData):Observable<any>{
+    var res = this.http.post(this.Server_IP+"/model/train/"+ mid,formData);
+    return res;
+  }
+
 
 
 }

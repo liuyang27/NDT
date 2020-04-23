@@ -23,3 +23,21 @@
     background: #5a6988;
     color: #fff;
   }
+
+  :host{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  mat-drawer{
+    width: 30%;
+    max-width: 300px;
+   }
+   
+   mat-drawer-container{
+     height: 100%;
+   }
+   
+
+   

@@ -30,16 +30,6 @@
   </mat-toolbar-row>
 </mat-toolbar>
 
-
-<div  style="display:inline; white-space:nowrap;flex: 1 1 auto;"> 
-  <h1>
-    <span>Learning based XCT Image Defect Detection</span> 
-    <img src="assets/images/artclogo.png" style=" max-width:230px; max-height:95px;  width: auto; height: auto;margin-left: 30px;"/>
-    <img src="assets/images/crplogo.png" />
-  </h1>
-</div>
-
-
 <mat-drawer-container class="main-container" autosize disableClose>
   <!-- side navigator -->
   <mat-drawer #drawer class="sidenav" mode="side">
@@ -61,10 +51,16 @@
   <!-- end of side navigator -->
 
 
-
-
-
   <mat-drawer-content > 
+    <!-- Header  -->
+    <div  style="display:inline; white-space:nowrap;flex: 1 1 auto;"> 
+      <h1>
+        <span>Learning based XCT Image Defect Detection</span> 
+        <img src="assets/images/artclogo.png" style=" max-width:230px; max-height:95px;  width: auto; height: auto;margin-left: 30px;"/>
+        <img src="assets/images/crplogo.png" />
+      </h1>
+    </div>
+    <!-- Content -->
     <router-outlet></router-outlet>
   </mat-drawer-content>
 

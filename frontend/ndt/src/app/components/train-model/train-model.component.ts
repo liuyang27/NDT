@@ -1,5 +1,6 @@
-import { Component, OnInit,Input } from '@angular/core';
+import { Component, OnInit,Input, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { ModelService } from 'src/app/services/model.service';
 
 @Component({
   selector: 'app-train-model',
@@ -10,15 +11,25 @@ export class TrainModelComponent implements OnInit {
 
   @Input() modelData:any;
   // modelForm:FormGroup;
+  modelId;
+  uploadFiles = [];
+  formData= new FormData();
   trainingInputs:FormArray;
-  constructor( private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder,
+              private modelService: ModelService,
+              private ref: ChangeDetectorRef) { }
 
   ngOnInit(): void {
+    this.modelId=this.modelData["_id"];
+    // console.log(this.modelId)
     this.loadInputsData(this.modelData["trainingInputs"]);
   }
 
+  ngAfterContentChecked() {
+    this.ref.detectChanges();
+  }
+
   modelForm = this.fb.group({
-    // id: this.modelData["_id"],
     trainingInputs: this.fb.array([]),
   })
 
@@ -88,9 +99,29 @@ export class TrainModelComponent implements OnInit {
     //   });
     // }
   }
+  selectFiles(event,inputName){
+    console.log(inputName)
+    if(event.target.files.length>0){
+      // this.uploadFiles=event.target.files;
+      this.formData.delete(inputName);
+      for(let file of event.target.files){
+        this.formData.append(inputName,file);
+      }
+    }
+
+  }
 
   onSubmit(){
-    
+    // const formData= new FormData();
+    // formData.append('file',this.uploadFiles);
+    // formData.append('textInputs',this.modelForm.getRawValue());
+
+    // this.formData.append('textInputs',this.modelForm.value);
+    this.formData.append('textInputs',JSON.stringify(this.modelForm.value));
+    console.log(this.modelForm.value)
+    this.modelService.trainModel(this.modelId,this.formData).subscribe(data=>{
+      console.log(data)
+    })
   }
 
 }

@@ -10,11 +10,11 @@
             </mat-label>
 
             <!-- File -->
-            <input type="file" formControlName="answer" *ngIf="input.type == 'File'" multiple required>
+            <input type="file" formControlName="answer" *ngIf="input.type == 'File'" (change)="selectFiles($event,input.name)" multiple required>
 
             <!-- Number  -->
-            <mat-form-field class="full-width" *ngIf="input.type == 'Number'">
-                <input matInput type="number" class="full-width" formControlName="answer" required>
+            <mat-form-field *ngIf="input.type == 'Number'" appearance="outline">
+                <input matInput type="number" formControlName="answer" required>
             </mat-form-field>
 
             <!-- RadioButton -->
@@ -26,7 +26,7 @@
             </mat-radio-group>
 
             <!-- DropdownList -->
-            <mat-form-field *ngIf="input.type == 'DropdownList'" required>
+            <mat-form-field *ngIf="input.type == 'DropdownList'" appearance="fill" required>
                 <mat-select formControlName="answer">
                     <mat-option *ngFor="let option of input.options" value="{{option}}">{{option}}</mat-option>
                 </mat-select>
@@ -52,6 +52,11 @@
     </div>
 
     {{modelForm.value | json}}
+    <br>
+    <div style="display: flex;justify-content:space-around;"> 
+        <button mat-flat-button color="primary" style="width:50%;" [disabled]="!modelForm.valid">Start Train</button>
+    </div>
+
 </form>
 
 <br><br><br>

@@ -8,6 +8,7 @@
 //------------------ignore above---------------------------
 // const nodemailer = require("nodemailer");
 var CNN_Model = require("../models/CNN_Model");
+var formidable = require('formidable');
 // var UserEvent = require("../models/UserEvent");
 // var User = require("../models/User");
 // const PDFDocument = require('pdfkit');
@@ -122,79 +123,110 @@ exports.doDeleteModel = function (req, res) {
 
 
 
-  exports.doEditModel = function (req, res) {
-    console.log("------------------------Edit MODEL-----------------------------")
-    var mid = req.params.mid;
-    console.log("Model ID:" + mid)
-    var body = req.body
-    CNN_Model.findOneAndUpdate({ "_id": mid }, body, { new: true }, function (err, results) {
-
-      if (err) {
-        console.log(err)
-        res.json({ "results": -1 });
-        return;
-      }
-      console.log("Model edited successful")
-      res.json({ "results": 1 });
-
-    })
-
-  }
 
 
-  exports.checkin = function (req, res) {
-    console.log("==============user check in=================")
+exports.doEditModel = function (req, res) {
+  console.log("------------------------Edit MODEL-----------------------------")
+  var mid = req.params.mid;
+  console.log("Model ID:" + mid)
+  var body = req.body
+  CNN_Model.findOneAndUpdate({ "_id": mid }, body, { new: true }, function (err, results) {
 
-    eid = req.body.eid;
-    qrcode = req.body.qrcode;
+    if (err) {
+      console.log(err)
+      res.json({ "results": -1 });
+      return;
+    }
+    console.log("Model edited successful")
+    res.json({ "results": 1 });
 
-    UserEvent.validationCheck(eid, qrcode, function (results) {
+  })
 
-      if (results.code < 0) {
-        console.log(results.code);
-        res.json({ "results": results.code });
+}
 
-      } else {
-        var d = new Date();
-        UserEvent.findByIdAndUpdate(qrcode, { $push: { Attendance: d } }, function (err, response) {
-          if (err) {
+
+exports.doTrainModel = function (req, res) {
+  console.log("==============Train Model=================")
+  var form = new formidable.IncomingForm();
+  form.uploadDir = "./uploads";
+  form.keepExtensions = true;
+  form.multiples = true;
+  // form.maxFieldsSize=150000*1024*1024;
+  form.parse(req, function (err, fields, files) {
+    if (err) {
+      console.log("============== errors  =================")
+      console.log(err)
+    }
+
+    console.log("==============uploaded datas....=================")
+    console.log(fields);
+    console.log(fields.textInputs);
+    inputsParameters = JSON.parse(fields.textInputs);
+    console.log(inputsParameters);
+    console.log("----------------------------")
+    parameters=inputsParameters["trainingInputs"]
+    console.log(parameters);
+    console.log("==============uploaded files....=================")
+    console.log(files)
+  });
+  res.send("aaa")
+}
+
+
+
+exports.checkin = function (req, res) {
+  console.log("==============user check in=================")
+
+  eid = req.body.eid;
+  qrcode = req.body.qrcode;
+
+  UserEvent.validationCheck(eid, qrcode, function (results) {
+
+    if (results.code < 0) {
+      console.log(results.code);
+      res.json({ "results": results.code });
+
+    } else {
+      var d = new Date();
+      UserEvent.findByIdAndUpdate(qrcode, { $push: { Attendance: d } }, function (err, response) {
+        if (err) {
+          console.log(results.code);
+          res.json({ "results": -3 });     //update mongoDB fail 
+          return;
+        }
+
+        User.findById(results.user[0].UserId, function (error, data) {
+          if (error) {
             console.log(results.code);
             res.json({ "results": -3 });     //update mongoDB fail 
             return;
           }
+          console.log(results.code);
 
-          User.findById(results.user[0].UserId, function (error, data) {
-            if (error) {
-              console.log(results.code);
-              res.json({ "results": -3 });     //update mongoDB fail 
-              return;
-            }
-            console.log(results.code);
+          // console.log(data)
+          if (!data) {
+            res.json({ "results": -3 });
+            return;
+          }
+          var qrCodeContent = {
+            Name: data.Name,
+            Company: data.Company,
+            Email: data.Email,
+            Mobiles: data.Mobiles
+          }
 
-            // console.log(data)
-            if (!data) {
-              res.json({ "results": -3 });
-              return;
-            }
-            var qrCodeContent = {
-              Name: data.Name,
-              Company: data.Company,
-              Email: data.Email,
-              Mobiles: data.Mobiles
-            }
+          UserEvent.findById(qrcode, function (e, details) {
+            console.log("--------------presurvey details---------")
+            console.log(details.PreEventSurvey)
 
-            UserEvent.findById(qrcode, function (e, details) {
-              console.log("--------------presurvey details---------")
-              console.log(details.PreEventSurvey)
+            res.json({ "results": results.code, "user": qrCodeContent, "PreEventSurvey": details.PreEventSurvey });   //check-in ok
 
-              res.json({ "results": results.code, "user": qrCodeContent, "PreEventSurvey": details.PreEventSurvey });   //check-in ok
-
-            })
           })
         })
-      }
+      })
+    }
 
 
-    })
+  })
 
-  }
+}
