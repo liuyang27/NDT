@@ -12,7 +12,7 @@ var formidable = require('formidable');
 // var UserEvent = require("../models/UserEvent");
 // var User = require("../models/User");
 // const PDFDocument = require('pdfkit');
-// var fs = require('fs');
+var fs = require('fs');
 // var QRCode = require('qrcode')
 // var printer = require("pdf-to-printer");
 
@@ -147,29 +147,59 @@ exports.doEditModel = function (req, res) {
 
 exports.doTrainModel = function (req, res) {
   console.log("==============Train Model=================")
+  var mid = req.params.mid;
   var form = new formidable.IncomingForm();
   form.uploadDir = "./uploads";
   form.keepExtensions = true;
   form.multiples = true;
-  // form.maxFieldsSize=150000*1024*1024;
+  form.maxFileSize = 200 * 1024 * 1024; //total file max size = 200MB
+
+
   form.parse(req, function (err, fields, files) {
     if (err) {
       console.log("============== errors  =================")
       console.log(err)
+      res.json({ "results": -1 });
+      return;
     }
 
-    console.log("==============uploaded datas....=================")
-    console.log(fields);
-    console.log(fields.textInputs);
     inputsParameters = JSON.parse(fields.textInputs);
-    console.log(inputsParameters);
-    console.log("----------------------------")
-    parameters=inputsParameters["trainingInputs"]
-    console.log(parameters);
-    console.log("==============uploaded files....=================")
-    console.log(files)
+    parameters = inputsParameters["trainingInputs"]
+
+    n = 1;
+    timeStampId = new Date().getTime().toString();
+    for (let i = 0; i < parameters.length; i++) {
+      if (parameters[i].type == "File" && !fs.existsSync("./uploads/" + mid + "/Train_" + timeStampId + "/file" + n)) {
+        fs.mkdirSync("./uploads/" + mid + "/Train_" + timeStampId + "/file" + n, { recursive: true })
+        console.log("created new training folder" + n)
+        n++;
+      }
+    }
+
+    // console.log("==============rename and relocate uploaded files....=================")
+    // console.log(files)
+    n = 1;
+    for (let i = 0; i < parameters.length; i++) {
+      if (parameters[i].type == "File") {
+        TrainingInputName = parameters[i].name
+        if (Array.isArray(files[TrainingInputName])) {
+          for (j = 0; j < files[TrainingInputName].length; j++) {
+            oldPath = "./" + files[TrainingInputName][j].path
+            newPath = "./uploads/" + mid + "/Train_" + timeStampId + "/file" + n + "/" + files[TrainingInputName][j].name
+            fs.renameSync(oldPath, newPath);
+          }
+        } else {
+          oldPath = "./" + files[TrainingInputName].path
+          newPath = "./uploads/" + mid + "/Train_" + timeStampId + "/file" + n + "/" + files[TrainingInputName].name
+          fs.renameSync(oldPath, newPath);
+        }
+        n++;
+      }
+    }
+    res.json({ "results": "ok" });
   });
-  res.send("aaa")
+
+
 }
 
 
@@ -225,8 +255,6 @@ exports.checkin = function (req, res) {
         })
       })
     }
-
-
   })
 
 }
