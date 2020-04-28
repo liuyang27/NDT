@@ -6,7 +6,7 @@
     
     <mat-tab label="About"> <app-about [modelData]="modelData"></app-about > </mat-tab>
     <mat-tab label="Train Model"> <app-train-model [modelData]="modelData"></app-train-model> </mat-tab>
-    <mat-tab label="Predict"> <app-predict></app-predict> </mat-tab>
+    <mat-tab label="Predict"> <app-predict [modelData]="modelData"></app-predict> </mat-tab>
     <mat-tab label="Back"> <div style="height: 100%;"><a class="subnav" [routerLink]="[ '/models' ]">Back</a></div> </mat-tab>
   </mat-tab-group>
 

@@ -202,6 +202,76 @@ exports.doTrainModel = function (req, res) {
 
 }
 
+exports.doPredictModel = function (req, res) {
+  console.log("==============Predict Model=================")
+  var mid = req.params.mid;
+  var form = new formidable.IncomingForm();
+  form.uploadDir = "./uploads";
+  form.keepExtensions = true;
+  form.multiples = true;
+  form.maxFileSize = 200 * 1024 * 1024; //total file max size = 200MB
+
+
+  form.parse(req, function (err, fields, files) {
+    if (err) {
+      console.log("============== errors  =================")
+      console.log(err)
+      res.json({ "results": -1 });
+      return;
+    }
+
+    inputsParameters = JSON.parse(fields.textInputs);
+    parameters = inputsParameters["predictInputs"]
+
+    console.log(fields)
+
+    n = 1;
+    timeStampId = new Date().getTime().toString();
+    for (let i = 0; i < parameters.length; i++) {
+      if (parameters[i].type == "File" && !fs.existsSync("./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n)) {
+        fs.mkdirSync("./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n, { recursive: true })
+        console.log("created new predict folder" + n)
+        n++;
+      }
+    }
+
+    // console.log("==============rename and relocate uploaded files....=================")
+    // console.log(files)
+    n = 1;
+    for (let i = 0; i < parameters.length; i++) {
+      if (parameters[i].type == "File") {
+        PredictInputName = parameters[i].name
+        if (Array.isArray(files[PredictInputName])) {
+          for (j = 0; j < files[PredictInputName].length; j++) {
+            oldPath = "./" + files[PredictInputName][j].path
+            newPath = "./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n + "/" + files[PredictInputName][j].name
+            fs.renameSync(oldPath, newPath);
+          }
+        } else {
+          oldPath = "./" + files[PredictInputName].path
+          newPath = "./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n + "/" + files[PredictInputName].name
+          fs.renameSync(oldPath, newPath);
+        }
+        n++;
+      }
+    }
+
+    // console.log("get h5 files...")
+    // let h5= getH5("./uploads/h5")
+    // console.log(h5)
+    // console.log("return h5 files...")
+
+    res.json({ "results": "ok" });
+  });
+
+
+}
+
+
+function getH5(path){
+  let h5=fs.readdirSync(path);
+  return h5;
+}
 
 
 exports.checkin = function (req, res) {

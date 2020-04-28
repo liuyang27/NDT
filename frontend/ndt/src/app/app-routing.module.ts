@@ -34,25 +34,25 @@ const routes: Routes = [
     //   {path:"**",redirectTo:"about"}
     // ]
   },
-  {
-    path:"models/pores",component:PoresComponent,
-    children:[
-      {path:"about",component:AboutComponent},
-      {path:"train",component:TrainModelComponent},
-      {path:"predict",component:PredictComponent},
-      {path:"**",redirectTo:"about"}
-    ]
+  // {
+  //   path:"models/pores",component:PoresComponent,
+  //   children:[
+  //     {path:"about",component:AboutComponent},
+  //     {path:"train",component:TrainModelComponent},
+  //     {path:"predict",component:PredictComponent},
+  //     {path:"**",redirectTo:"about"}
+  //   ]
 
-  },
-  {
-    path:"models/cracks",component:CracksComponent,
-    children:[
-      {path:"about",component:AboutComponent},
-      {path:"train",component:TrainModelComponent},
-      {path:"predict",component:PredictComponent},
-      {path:"**",redirectTo:"about"}
-    ]
-  },
+  // },
+  // {
+  //   path:"models/cracks",component:CracksComponent,
+  //   children:[
+  //     {path:"about",component:AboutComponent},
+  //     {path:"train",component:TrainModelComponent},
+  //     {path:"predict",component:PredictComponent},
+  //     {path:"**",redirectTo:"about"}
+  //   ]
+  // },
   { path:"**",redirectTo:'models' }
 ];
 

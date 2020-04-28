@@ -42,6 +42,11 @@ export class ModelService {
     return res;
   }
 
+  predictModel(mid,formData):Observable<any>{
+    var res = this.http.post(this.Server_IP+"/model/predict/"+ mid,formData);
+    return res;
+  }
+
 
 
 }

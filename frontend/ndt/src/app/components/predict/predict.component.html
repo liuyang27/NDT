@@ -1,1 +1,62 @@
-<p>predict works!</p>
+<h1>{{modelData.name}}</h1><br>
+
+<form [formGroup]="modelForm" (ngSubmit)="onSubmit()" *ngIf="modelData">
+
+    <div formArrayName="predictInputs" *ngFor="let input of modelData.predictInputs; let i = index;">
+
+        <div class="example-container" [formGroupName]="i">
+            <mat-label>
+                <h2>{{input.name}}:</h2>
+            </mat-label>
+
+            <!-- File -->
+            <input type="file" formControlName="answer" *ngIf="input.type == 'File'" (change)="selectFiles($event,input.name)" multiple required>
+
+            <!-- Number  -->
+            <mat-form-field *ngIf="input.type == 'Number'" appearance="outline">
+                <input matInput type="number" formControlName="answer" required>
+            </mat-form-field>
+
+            <!-- RadioButton -->
+            <mat-radio-group class="example-radio-group" formControlName="answer" *ngIf="input.type == 'RadioButton'"
+                required>
+                <mat-radio-button class="example-radio-button" *ngFor="let option of input.options" value="{{option}}">
+                    {{option}}
+                </mat-radio-button>
+            </mat-radio-group>
+
+            <!-- DropdownList -->
+            <mat-form-field *ngIf="input.type == 'DropdownList'" appearance="fill" >
+                <mat-select formControlName="answer" required> 
+                    <mat-option *ngFor="let option of input.options" value="{{option}}">{{option}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- CheckBox -->
+            <div *ngIf="input.type == 'CheckBox'">
+                <mat-label *ngIf="input.maxChoice!=null && input.maxChoice > 1">(Allowed to Choose a maximum of
+                    {{input.maxChoice }} Options)</mat-label>
+                <mat-selection-list #CheckBoxes formControlName="answer">
+                    <mat-list-option #box *ngFor="let option of input.options" value="{{option}}"
+                        [disabled]="CheckBoxes.selectedOptions.selected.length >= input.maxChoice && !box.selected"
+                        checkboxPosition="before">
+                        {{option}}
+                    </mat-list-option>
+                </mat-selection-list>
+            </div>
+
+        </div>
+
+
+        <br>
+    </div>
+
+    {{modelForm.value | json}}
+    <br>
+    <div style="display: flex;justify-content:space-around;"> 
+        <button mat-flat-button color="primary" style="width:50%;" [disabled]="!modelForm.valid">Run</button>
+    </div>
+
+</form>
+
+<br><br><br>

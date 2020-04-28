@@ -26,8 +26,8 @@
             </mat-radio-group>
 
             <!-- DropdownList -->
-            <mat-form-field *ngIf="input.type == 'DropdownList'" appearance="fill" required>
-                <mat-select formControlName="answer">
+            <mat-form-field *ngIf="input.type == 'DropdownList'" appearance="fill" >
+                <mat-select formControlName="answer" required>
                     <mat-option *ngFor="let option of input.options" value="{{option}}">{{option}}</mat-option>
                 </mat-select>
             </mat-form-field>
