@@ -18,6 +18,8 @@ import { ManageModelsComponent } from './components/manage-models/manage-models.
 import { EditModelComponent } from './components/edit-model/edit-model.component';
 import { ModelDetailComponent } from './components/model-detail/model-detail.component';
 import { FormsModule } from '@angular/forms';
+import { NgxEchartsModule } from 'ngx-echarts';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import { FormsModule } from '@angular/forms';
     AddNewModelComponent,
     ManageModelsComponent,
     EditModelComponent,
-    ModelDetailComponent
+    ModelDetailComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +43,8 @@ import { FormsModule } from '@angular/forms';
     MaterialModule,
     ReactiveFormsModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    NgxEchartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

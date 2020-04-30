@@ -10,9 +10,13 @@ import { AddNewModelComponent } from './components/add-new-model/add-new-model.c
 import { ManageModelsComponent } from './components/manage-models/manage-models.component';
 import { EditModelComponent } from './components/edit-model/edit-model.component';
 import { ModelDetailComponent } from './components/model-detail/model-detail.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 
 const routes: Routes = [
+  {
+    path:"dashboard",component:DashboardComponent,
+  },
   {
     path:"models",component:CnnModelsComponent,
   },
@@ -53,7 +57,7 @@ const routes: Routes = [
   //     {path:"**",redirectTo:"about"}
   //   ]
   // },
-  { path:"**",redirectTo:'models' }
+  { path:"**",redirectTo:'dashboard' }
 ];
 
 @NgModule({
