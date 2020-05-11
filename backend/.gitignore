@@ -46,4 +46,4 @@ testem.log
 Thumbs.db
 
 # My Files
-modelServerConfig.js
+ServerConfig.js
