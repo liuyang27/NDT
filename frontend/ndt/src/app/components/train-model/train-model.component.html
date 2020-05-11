@@ -10,7 +10,8 @@
             </mat-label>
 
             <!-- File -->
-            <input type="file" formControlName="answer" *ngIf="input.type == 'File'" (change)="selectFiles($event,input.name)" multiple required>
+            <input type="file" formControlName="answer" *ngIf="input.type == 'File'"
+                (change)="selectFiles($event,input.name)" multiple required>
 
             <!-- Number  -->
             <mat-form-field *ngIf="input.type == 'Number'" appearance="outline">
@@ -26,7 +27,7 @@
             </mat-radio-group>
 
             <!-- DropdownList -->
-            <mat-form-field *ngIf="input.type == 'DropdownList'" appearance="fill" >
+            <mat-form-field *ngIf="input.type == 'DropdownList'" appearance="fill">
                 <mat-select formControlName="answer" required>
                     <mat-option *ngFor="let option of input.options" value="{{option}}">{{option}}</mat-option>
                 </mat-select>
@@ -53,10 +54,26 @@
 
     {{modelForm.value | json}}
     <br>
-    <div style="display: flex;justify-content:space-around;"> 
+    <div style="display: flex;justify-content:space-around;">
         <button mat-flat-button color="primary" style="width:50%;" [disabled]="!modelForm.valid">Start Train</button>
     </div>
 
 </form>
+
+<br><br>
+<h2>Train Results:</h2>
+<div style="display: flex;justify-content:left">
+    <button mat-flat-button color="primary" (click)="getOutput()" style="margin-left: 10px;margin-right: 30px;">Get Results</button>
+    <mat-checkbox class="example-margin" (change)="autoRefreshEnable($event)"><b>Auto refresh results by every 30 seconds</b></mat-checkbox>
+</div>
+<br><br><br>
+
+
+<pre>
+    {{outputData}}
+</pre>
+
+
+
 
 <br><br><br>

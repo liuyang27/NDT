@@ -6,15 +6,14 @@
 
 
 //------------------ignore above---------------------------
-// const nodemailer = require("nodemailer");
 var CNN_Model = require("../models/CNN_Model");
 var formidable = require('formidable');
 // var UserEvent = require("../models/UserEvent");
 // var User = require("../models/User");
-// const PDFDocument = require('pdfkit');
 var fs = require('fs');
-// var QRCode = require('qrcode')
-// var printer = require("pdf-to-printer");
+// var modelServerConfig = require('../modelServerConfig')
+var ndt_Pores = require("./ndt_Pores");
+var ndt_Cracks = require("./ndt_Cracks");
 
 
 
@@ -155,7 +154,7 @@ exports.doTrainModel = function (req, res) {
   form.maxFileSize = 200 * 1024 * 1024; //total file max size = 200MB
 
 
-  form.parse(req, function (err, fields, files) {
+  form.parse(req, async function (err, fields, files) {
     if (err) {
       console.log("============== errors  =================")
       console.log(err)
@@ -163,17 +162,23 @@ exports.doTrainModel = function (req, res) {
       return;
     }
 
-    inputsParameters = JSON.parse(fields.textInputs);
-    parameters = inputsParameters["trainingInputs"]
+    try {
+      inputsParameters = JSON.parse(fields.textInputs);
+      parameters = inputsParameters["trainingInputs"]
 
-    n = 1;
-    timeStampId = new Date().getTime().toString();
-    for (let i = 0; i < parameters.length; i++) {
-      if (parameters[i].type == "File" && !fs.existsSync("./uploads/" + mid + "/Train_" + timeStampId + "/file" + n)) {
-        fs.mkdirSync("./uploads/" + mid + "/Train_" + timeStampId + "/file" + n, { recursive: true })
-        console.log("created new training folder" + n)
-        n++;
+      n = 1;
+      timeStampId = new Date().getTime().toString();
+      for (let i = 0; i < parameters.length; i++) {
+        if (parameters[i].type == "File" && !fs.existsSync("./uploads/" + mid + "/Train_" + timeStampId + "/file" + n)) {
+          fs.mkdirSync("./uploads/" + mid + "/Train_" + timeStampId + "/file" + n, { recursive: true })
+          console.log("created new training folder" + n)
+          n++;
+        }
       }
+    } catch (error) {
+      console.log("submitted form data error")
+      res.json({ "results": -2 });
+      return;
     }
 
     // console.log("==============rename and relocate uploaded files....=================")
@@ -196,11 +201,49 @@ exports.doTrainModel = function (req, res) {
         n++;
       }
     }
-    res.json({ "results": "ok" });
-  });
 
+    // if(mid=="5e8d94e200bc28e910a8a24a"){
+    if (mid == "5e8add664840065c3c09e8d1") {
+      await ndt_Pores.trainModel(mid, timeStampId,(data)=>{
+        console.log("start training ok")
+        res.json({ "results": data });
+      });
+    }
+    else if (mid == "5e8add664840065c3c09e8d1") {
+      console.log("go to model cracks>>>>>>>>>>>>>>>")
+      ndt_Cracks.trainModel(mid, timeStampId);
+    }
+    else {
+      res.json({ "results": "not config yet" });
+      console.log(">>>>>>>>>>> model not config yet >>>>>>>>>>>")
+      return;
+    }
+
+ 
+  });
+}
+
+
+exports.getTrainResult=async function (req, res) {
+  var mid = req.params.mid;
+  if (mid == "5e8add664840065c3c09e8d1") {
+    await ndt_Pores.getTrainResult(mid,(data)=>{
+      res.json({ "results": data });
+    });
+  }
+  else if (mid == "5e8add664840065c3c09e8d1") {
+    res.json({ "results": "not config yet" });
+    console.log(">>>>>>>>>>> model not config yet >>>>>>>>>>>")
+  }
+  else {
+    res.json({ "results": "not config yet" });
+    console.log(">>>>>>>>>>> model not config yet >>>>>>>>>>>")
+    return;
+  }
 
 }
+
+
 
 exports.doPredictModel = function (req, res) {
   console.log("==============Predict Model=================")
@@ -268,8 +311,8 @@ exports.doPredictModel = function (req, res) {
 }
 
 
-function getH5(path){
-  let h5=fs.readdirSync(path);
+function getH5(path) {
+  let h5 = fs.readdirSync(path);
   return h5;
 }
 

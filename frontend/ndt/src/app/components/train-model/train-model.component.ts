@@ -14,6 +14,9 @@ export class TrainModelComponent implements OnInit {
   modelId;
   formData= new FormData();
   trainingInputs:FormArray;
+  outputData="";
+  autoRefreshId;
+
   constructor(private fb: FormBuilder,
               private modelService: ModelService,
               private ref: ChangeDetectorRef) { }
@@ -64,8 +67,33 @@ export class TrainModelComponent implements OnInit {
     this.formData.append('textInputs',JSON.stringify(this.modelForm.value));
     console.log(this.modelForm.value)
     this.modelService.trainModel(this.modelId,this.formData).subscribe(data=>{
-      console.log(data)
+      console.log("submit ok")
+      this.getOutput();
     })
+  }
+
+
+  getOutput(){
+    this.modelService.getTrainOutput(this.modelId).subscribe(data=>{
+      console.log("get train result ok")
+      this.outputData=data.results;
+    })
+  }
+
+  autoRefreshEnable(event){
+    if(event.checked==true){
+      this.autoRefreshId = setInterval(()=>{
+        this.getOutput();
+      }, 30000);
+    }else{
+      clearInterval(this.autoRefreshId);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.autoRefreshId) {
+      clearInterval(this.autoRefreshId);
+    }
   }
 
 }

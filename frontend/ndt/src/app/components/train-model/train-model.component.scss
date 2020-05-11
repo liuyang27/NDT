@@ -28,3 +28,14 @@
   .example-margin {
     margin: 0 10px;
   }
+
+
+  pre{
+    max-height: 300px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  mat-checkbox ::ng-deep .mat-checkbox-inner-container {
+    width: 20px;height: 20px;
+  }

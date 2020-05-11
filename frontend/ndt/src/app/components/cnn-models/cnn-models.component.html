@@ -7,15 +7,9 @@
 
     <div *ngFor="let model of modelList" class="model-block">
         <a mat-raised-button routerLink="./{{model._id}}" class="model">
-            <div class="model" >
-                <p>
-                    Model: {{model.name}}
-                </p>
-                <p>
-                    Type: {{model.type}}
-                </p>
-            </div>
-     
+            <p>
+                {{model.name}}
+            </p>
         </a>
     </div>
 </div>

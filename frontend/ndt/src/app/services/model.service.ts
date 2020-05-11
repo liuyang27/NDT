@@ -47,6 +47,9 @@ export class ModelService {
     return res;
   }
 
-
+  getTrainOutput(mid):Observable<any>{
+    var res = this.http.get(this.Server_IP+"/model/trainResult/"+ mid);
+    return res;
+  }
 
 }

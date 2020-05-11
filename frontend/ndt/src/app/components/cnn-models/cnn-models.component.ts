@@ -10,7 +10,7 @@ import { ModelService } from '../../services/model.service';
 export class CnnModelsComponent implements OnInit {
 
   modelList:any[];
-
+  LogoURL="assets/images/MLlogo.JPG"
   constructor(private modelService:ModelService) { }
 
   ngOnInit(): void {
