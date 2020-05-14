@@ -204,7 +204,7 @@ exports.doTrainModel = function (req, res) {
 
     // if(mid=="5e8d94e200bc28e910a8a24a"){
     if (mid == "5e8add664840065c3c09e8d1") {
-      await ndt_Pores.trainModel(mid, timeStampId,(data)=>{
+      await ndt_Pores.trainModel(mid, timeStampId,parameters,(data)=>{
         console.log("start training ok")
         res.json({ "results": data });
       });
@@ -299,10 +299,7 @@ exports.doPredictModel = function (req, res) {
       }
     }
 
-    // console.log("get h5 files...")
-    // let h5= getH5("./uploads/h5")
-    // console.log(h5)
-    // console.log("return h5 files...")
+
 
     res.json({ "results": "ok" });
   });
@@ -311,10 +308,26 @@ exports.doPredictModel = function (req, res) {
 }
 
 
-function getH5(path) {
-  let h5 = fs.readdirSync(path);
-  return h5;
+
+exports.getH5 =async function (req, res) {
+  var mid = req.params.mid;
+  if (mid == "5e8add664840065c3c09e8d1") {
+    await ndt_Pores.getH5(mid,(data)=>{
+      res.json({ "results": data });
+    });
+  }
+  else if (mid == "5e8add664840065c3c09e8d1") {
+    res.json({ "results": "not config yet" });
+    console.log(">>>>>>>>>>> model not config yet >>>>>>>>>>>")
+  }
+  else {
+    res.json({ "results": "not config yet" });
+    console.log(">>>>>>>>>>> model not config yet >>>>>>>>>>>")
+    return;
+  }
+
 }
+
 
 
 exports.checkin = function (req, res) {

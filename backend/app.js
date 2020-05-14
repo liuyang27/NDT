@@ -32,7 +32,7 @@ app.get("/model/:mid",                 mainCtrl.getModelDetail)
 app.post("/model/train/:mid",          mainCtrl.doTrainModel)
 app.post("/model/predict/:mid",        mainCtrl.doPredictModel)
 app.get("/model/trainResult/:mid",     mainCtrl.getTrainResult)
-
+app.get("/model/H5/:mid",              mainCtrl.getH5)
 
 app.post("/testssh",                   ndt_Pores.testssh)
 

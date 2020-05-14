@@ -23,11 +23,12 @@ function getModelServerInfo(modelId) {
   }
 }
 
-exports.trainModel =  function (modelId, timeStampId,callback) {
+exports.trainModel =  function (modelId, timeStampId,parameters,callback) {
   var conn = new Client();
   var sftp = new SFTPClient();
   getModelServerInfo(modelId);
   // console.log(ssh_config);
+  console.log(parameters)
 
   sftp.connect(ssh_config).then(() => {
     return sftp.mkdir(serverInfo.fileUpladPath + timeStampId + "_Images", true)
@@ -142,6 +143,39 @@ exports.trainModel =  function (modelId, timeStampId,callback) {
 
 exports.predict = function (modelId, timeStampId) {
 
+}
+
+exports.getH5 = function (modelId, callback) {
+  console.log("============= Get H5 files ================")
+  var conn = new Client();
+  getModelServerInfo(modelId);
+  var output="";
+  conn.connect(ssh_config);
+  conn.on('ready',function () {
+    console.log('Client :: ready');
+    conn.exec('cd /d '+serverInfo.workDir+' && dir /b *.h5',function (err, stream) {
+      if (err) throw err;
+      stream.on('close', function (code, signal) {
+        console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+        conn.end();
+      }).on('data', function (data) {
+        console.log('STDOUT: ' + data);
+        output=output+data;
+      }).stderr.on('data', function (data) {
+        console.log('STDERR: ' + data);
+      });
+    });
+  });
+  conn.on("error", function (err) {
+    console.log("=============ssh connection error==============")
+    console.log(err)
+    conn.end();
+  });
+
+  conn.on('close', function () {
+    console.log("ssh connection close...")
+    callback(output);
+  })
 }
 
 exports.getTrainResult = function(modelId,callback){
