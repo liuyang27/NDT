@@ -209,6 +209,12 @@ exports.doTrainModel = function (req, res) {
         res.json({ "results": data });
       });
     }
+    else if (mid == "5e8d94e200bc28e910a8a24a") {
+      await ndt_Pores.trainModel(mid, timeStampId,parameters,(data)=>{
+        console.log("start training ok")
+        res.json({ "results": data });
+      });
+    }
     else if (mid == "5e8add664840065c3c09e8d1") {
       console.log("go to model cracks>>>>>>>>>>>>>>>")
       ndt_Cracks.trainModel(mid, timeStampId);
@@ -227,6 +233,11 @@ exports.doTrainModel = function (req, res) {
 exports.getTrainResult=async function (req, res) {
   var mid = req.params.mid;
   if (mid == "5e8add664840065c3c09e8d1") {
+    await ndt_Pores.getTrainResult(mid,(data)=>{
+      res.json({ "results": data });
+    });
+  }
+  else if (mid == "5e8d94e200bc28e910a8a24a") {
     await ndt_Pores.getTrainResult(mid,(data)=>{
       res.json({ "results": data });
     });

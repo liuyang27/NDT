@@ -8,6 +8,7 @@ var ssh_config;
 
 
 function getModelServerInfo(modelId) {
+  console.log(typeof(ServerConfig))
   serverInfo = null;
   for (var i = 0; i < modelServerConfig.length; i++) {
     if (modelServerConfig[i].modelId == modelId) {
@@ -29,6 +30,9 @@ exports.trainModel =  function (modelId, timeStampId,parameters,callback) {
   getModelServerInfo(modelId);
   // console.log(ssh_config);
   console.log(parameters)
+  var ss=getParamsString(modelId,parameters)
+  console.log('*********************ss:')
+  console.log(ss)
 
   sftp.connect(ssh_config).then(() => {
     return sftp.mkdir(serverInfo.fileUpladPath + timeStampId + "_Images", true)
@@ -139,6 +143,28 @@ exports.trainModel =  function (modelId, timeStampId,parameters,callback) {
   // });
   // }).connect(ssh_config);
 
+}
+
+
+function getParamsString(modelId,parameters){
+  getModelServerInfo(modelId);
+  var params=serverInfo.paramString
+  var finalString="";
+  for(var i=0;i<params.length;i++){
+    for(var j=0;j<parameters.length;j++){
+      if(parameters[j].name==params[i]){
+        if(parameters[j].type=="CheckBox"){
+          parameters[j].answer.forEach(element => {
+            finalString=finalString+element+" ";
+          });
+        }else{
+          finalString=finalString+parameters[j].answer+" ";
+        }
+        break;
+      }
+    }
+  }
+  return finalString;
 }
 
 exports.predict = function (modelId, timeStampId) {
