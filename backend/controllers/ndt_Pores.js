@@ -8,7 +8,6 @@ var ssh_config;
 
 
 function getModelServerInfo(modelId) {
-  console.log(typeof(ServerConfig))
   serverInfo = null;
   for (var i = 0; i < modelServerConfig.length; i++) {
     if (modelServerConfig[i].modelId == modelId) {
@@ -30,9 +29,9 @@ exports.trainModel =  function (modelId, timeStampId,parameters,callback) {
   getModelServerInfo(modelId);
   // console.log(ssh_config);
   console.log(parameters)
-  var ss=getParamsString(modelId,parameters)
-  console.log('*********************ss:')
-  console.log(ss)
+  // var ss=getParamsString(modelId,parameters)
+  // console.log('*********************ss:')
+  // console.log(ss)
 
   sftp.connect(ssh_config).then(() => {
     return sftp.mkdir(serverInfo.fileUpladPath + timeStampId + "_Images", true)

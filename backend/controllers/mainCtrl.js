@@ -183,6 +183,7 @@ exports.doTrainModel = function (req, res) {
 
     // console.log("==============rename and relocate uploaded files....=================")
     // console.log(files)
+
     n = 1;
     for (let i = 0; i < parameters.length; i++) {
       if (parameters[i].type == "File") {
@@ -202,7 +203,7 @@ exports.doTrainModel = function (req, res) {
       }
     }
 
-    // if(mid=="5e8d94e200bc28e910a8a24a"){
+
     if (mid == "5e8add664840065c3c09e8d1") {
       await ndt_Pores.trainModel(mid, timeStampId,parameters,(data)=>{
         console.log("start training ok")
@@ -227,6 +228,8 @@ exports.doTrainModel = function (req, res) {
 
  
   });
+
+
 }
 
 

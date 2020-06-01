@@ -34,22 +34,30 @@ mongoose.connect(mongoConnection,{ useNewUrlParser: true, useUnifiedTopology: tr
 // mongoose.connect('mongodb://192.168.0.54/EventManagementSystem');
 
 
-app.get ("/model",                     mainCtrl.showIndex);
+app.get ("/svr/model",                     mainCtrl.showIndex);
 // app.get("/sendemail",                  mainCtrl.sendEmail)
-app.post("/model",                     mainCtrl.doAddModel)
-app.put("/model/:mid",                 mainCtrl.doEditModel)
-app.delete("/model/:mid",              mainCtrl.doDeleteModel)
-app.get("/model/:mid",                 mainCtrl.getModelDetail)
+app.post("/svr/model",                     mainCtrl.doAddModel)
+app.put("/svr/model/:mid",                 mainCtrl.doEditModel)
+app.delete("/svr/model/:mid",              mainCtrl.doDeleteModel)
+app.get("/svr/model/:mid",                 mainCtrl.getModelDetail)
 // app.post("/checkin",                   mainCtrl.checkin)
-app.post("/model/train/:mid",          mainCtrl.doTrainModel)
-app.post("/model/predict/:mid",        mainCtrl.doPredictModel)
-app.get("/model/trainResult/:mid",     mainCtrl.getTrainResult)
-app.get("/model/H5/:mid",              mainCtrl.getH5)
+app.post("/svr/model/train/:mid",          mainCtrl.doTrainModel)
+app.post("/svr/model/predict/:mid",        mainCtrl.doPredictModel)
+app.get("/svr/model/trainResult/:mid",     mainCtrl.getTrainResult)
+app.get("/svr/model/H5/:mid",              mainCtrl.getH5)
 
-app.post("/testssh",                   ndt_Pores.testssh)
+app.post("/svr/testssh",                   ndt_Pores.testssh)
 
 
 app.use(express.static("public"));
+
+app.use('/',express.static(__dirname + "/dist/ndt"));
+app.use('/manage',express.static(__dirname + "/dist/ndt"));
+app.use('/models',express.static(__dirname + "/dist/ndt"));
+app.use('/dashboard',express.static(__dirname + "/dist/ndt"));
+app.use('/addNewModel',express.static(__dirname + "/dist/ndt"));
+
+
 
 app.use(function(req,res){
     res.send("404 page not found..");
