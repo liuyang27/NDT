@@ -67,15 +67,23 @@ export class TrainModelComponent implements OnInit {
     this.formData.append('textInputs',JSON.stringify(this.modelForm.value));
     console.log(this.modelForm.value)
     this.modelService.trainModel(this.modelId,this.formData).subscribe(data=>{
-      console.log("submit ok")
-      this.getOutput();
+      if(data.results=="ok"){
+        console.log("Submit ok")
+        this.getOutput();
+      }else{
+        alert("Submit error: "+data.results)
+        console.log("Submit error:"+data.results)
+      }
+      
     })
   }
 
 
   getOutput(){
     this.modelService.getTrainOutput(this.modelId).subscribe(data=>{
-      console.log("get train result ok")
+      if(data.results=="" || data.results.length==0){
+        alert("Cannot get train results")
+      }
       this.outputData=data.results;
     })
   }

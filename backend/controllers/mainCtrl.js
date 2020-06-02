@@ -17,28 +17,6 @@ var ndt_Cracks = require("./ndt_Cracks");
 
 
 
-// const mydict={
-//     "1":"Year One",
-//     "2":"Year Two",
-//     "3":"Year Three",
-// };
-// exports.showIndex=function(req,res){
-//     console.log("showIndex function...........")
-//     Course.find({},function(err,results){
-//         results = results.map(element =>({
-//             "_id" : element._id, 
-//             "allow" : element.allow.map(e =>  (e in mydict ) ? mydict[e]: "data err" ) , 
-//             "cid" : element.cid, 
-//             "name" : element.name, 
-//             "dayofweek" : element.dayofweek, 
-//             "number" : element.number, 
-//             "teacher" : element.teacher, 
-//             "briefintro" : element.briefintro, 
-//             "__v" : element.__v
-//         }) );
-//         res.json({"results":results});  
-// 	})
-// }
 
 
 exports.showIndex = function (req, res) {
@@ -59,7 +37,6 @@ exports.showIndex = function (req, res) {
     }));
     res.json({ "results": results });
   })
-  // res.send("sssssss");
 }
 
 
@@ -68,12 +45,35 @@ exports.getModelDetail = function (req, res) {
   console.log("-----------GET Model Detail--------------")
   var mid = req.params.mid;
   console.log("Model ID:" + mid)
-  CNN_Model.find({ "_id": mid }, function (err, results) {
+  CNN_Model.find({ "_id": mid }, async function (err, results) {
     if (err || results.length == 0) {
       res.json({ "results": -1 });
       return;
     }
-    res.json({ "results": results[0] });
+
+    //******************Get H5 for models***************** */
+    if (mid == "5e8add664840065c3c09e8d1") {
+      await ndt_Pores.getH5(mid, (data) => {
+        if (data == "" || data.length == 0) {
+          console.log("cannot find H5")
+        } else {
+          //**********for ubuntu************** */
+          var h5 = data.split('\n');
+          //**********for ubuntu************** */
+
+          //**********for windows************** */
+          // var h5=data.split('\r\n');
+          // h5=h5.slice(0, h5.length-1);
+          //**********for windows************** */
+          console.log(h5)
+          results[0].trainingInputs[4].options = h5
+        }
+        res.json({ "results": results[0] });
+      })
+    } else {
+      console.log("No H5 files config")
+      res.json({ "results": results[0] });
+    }
 
   })
 }
@@ -153,12 +153,16 @@ exports.doTrainModel = function (req, res) {
   form.multiples = true;
   form.maxFileSize = 200 * 1024 * 1024; //total file max size = 200MB
 
-
   form.parse(req, async function (err, fields, files) {
     if (err) {
       console.log("============== errors  =================")
       console.log(err)
-      res.json({ "results": -1 });
+      res.json({ "results": "Formidable form.parse error" });
+      return;
+    }
+    if (JSON.stringify(files) == "{}") {
+      console.log("No files uploaded...")
+      res.json({ "results": "No file uploaded" });
       return;
     }
 
@@ -175,43 +179,47 @@ exports.doTrainModel = function (req, res) {
           n++;
         }
       }
+
+      // console.log("==============rename and relocate uploaded files....=================")
+      // console.log(files)
+      n = 1;
+      for (let i = 0; i < parameters.length; i++) {
+        if (parameters[i].type == "File") {
+          TrainingInputName = parameters[i].name
+          if (Array.isArray(files[TrainingInputName])) {
+            for (j = 0; j < files[TrainingInputName].length; j++) {
+              oldPath = "./" + files[TrainingInputName][j].path
+              newPath = "./uploads/" + mid + "/Train_" + timeStampId + "/file" + n + "/" + files[TrainingInputName][j].name
+              fs.renameSync(oldPath, newPath);
+            }
+          } else {
+            oldPath = "./" + files[TrainingInputName].path
+            newPath = "./uploads/" + mid + "/Train_" + timeStampId + "/file" + n + "/" + files[TrainingInputName].name
+            fs.renameSync(oldPath, newPath);
+          }
+          n++;
+        }
+      }
     } catch (error) {
-      console.log("submitted form data error")
-      res.json({ "results": -2 });
+      console.log("Submitted form data error..")
+      res.json({ "results": "Submitted form data error" });
       return;
     }
 
-    // console.log("==============rename and relocate uploaded files....=================")
-    // console.log(files)
-
-    n = 1;
-    for (let i = 0; i < parameters.length; i++) {
-      if (parameters[i].type == "File") {
-        TrainingInputName = parameters[i].name
-        if (Array.isArray(files[TrainingInputName])) {
-          for (j = 0; j < files[TrainingInputName].length; j++) {
-            oldPath = "./" + files[TrainingInputName][j].path
-            newPath = "./uploads/" + mid + "/Train_" + timeStampId + "/file" + n + "/" + files[TrainingInputName][j].name
-            fs.renameSync(oldPath, newPath);
-          }
-        } else {
-          oldPath = "./" + files[TrainingInputName].path
-          newPath = "./uploads/" + mid + "/Train_" + timeStampId + "/file" + n + "/" + files[TrainingInputName].name
-          fs.renameSync(oldPath, newPath);
-        }
-        n++;
-      }
-    }
-
-
     if (mid == "5e8add664840065c3c09e8d1") {
-      await ndt_Pores.trainModel(mid, timeStampId,parameters,(data)=>{
-        console.log("start training ok")
-        res.json({ "results": data });
+      await ndt_Pores.trainModel(mid, timeStampId, parameters, (data) => {
+        if (data == "ok") {
+          console.log("MainCtrl: start training ok")
+          res.json({ "results": data });
+        } else {
+          console.log("MainCtrl: sftp connection error..")
+          res.json({ "results": data });
+        }
+
       });
     }
     else if (mid == "5e8d94e200bc28e910a8a24a") {
-      await ndt_Pores.trainModel(mid, timeStampId,parameters,(data)=>{
+      await ndt_Pores.trainModel(mid, timeStampId, parameters, (data) => {
         console.log("start training ok")
         res.json({ "results": data });
       });
@@ -226,22 +234,20 @@ exports.doTrainModel = function (req, res) {
       return;
     }
 
- 
+
   });
-
-
 }
 
 
-exports.getTrainResult=async function (req, res) {
+exports.getTrainResult = async function (req, res) {
   var mid = req.params.mid;
   if (mid == "5e8add664840065c3c09e8d1") {
-    await ndt_Pores.getTrainResult(mid,(data)=>{
+    await ndt_Pores.getTrainResult(mid, (data) => {
       res.json({ "results": data });
     });
   }
   else if (mid == "5e8d94e200bc28e910a8a24a") {
-    await ndt_Pores.getTrainResult(mid,(data)=>{
+    await ndt_Pores.getTrainResult(mid, (data) => {
       res.json({ "results": data });
     });
   }
@@ -269,48 +275,56 @@ exports.doPredictModel = function (req, res) {
   form.maxFileSize = 200 * 1024 * 1024; //total file max size = 200MB
 
 
-  form.parse(req, function (err, fields, files) {
+  form.parse(req,async function (err, fields, files) {
     if (err) {
       console.log("============== errors  =================")
       console.log(err)
-      res.json({ "results": -1 });
+      res.json({ "results": "Formidable form.parse error" });
       return;
     }
-
-    inputsParameters = JSON.parse(fields.textInputs);
-    parameters = inputsParameters["predictInputs"]
-
-    console.log(fields)
-
-    n = 1;
-    timeStampId = new Date().getTime().toString();
-    for (let i = 0; i < parameters.length; i++) {
-      if (parameters[i].type == "File" && !fs.existsSync("./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n)) {
-        fs.mkdirSync("./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n, { recursive: true })
-        console.log("created new predict folder" + n)
-        n++;
-      }
+    if (JSON.stringify(files) == "{}") {
+      console.log("No files uploaded...")
+      res.json({ "results": "No file uploaded" });
+      return;
     }
+    try {
+      inputsParameters = JSON.parse(fields.textInputs);
+      parameters = inputsParameters["predictInputs"]
 
-    // console.log("==============rename and relocate uploaded files....=================")
-    // console.log(files)
-    n = 1;
-    for (let i = 0; i < parameters.length; i++) {
-      if (parameters[i].type == "File") {
-        PredictInputName = parameters[i].name
-        if (Array.isArray(files[PredictInputName])) {
-          for (j = 0; j < files[PredictInputName].length; j++) {
-            oldPath = "./" + files[PredictInputName][j].path
-            newPath = "./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n + "/" + files[PredictInputName][j].name
+      n = 1;
+      timeStampId = new Date().getTime().toString();
+      for (let i = 0; i < parameters.length; i++) {
+        if (parameters[i].type == "File" && !fs.existsSync("./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n)) {
+          fs.mkdirSync("./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n, { recursive: true })
+          console.log("created new predict folder" + n)
+          n++;
+        }
+      }
+
+      // console.log("==============rename and relocate uploaded files....=================")
+      // console.log(files)
+      n = 1;
+      for (let i = 0; i < parameters.length; i++) {
+        if (parameters[i].type == "File") {
+          PredictInputName = parameters[i].name
+          if (Array.isArray(files[PredictInputName])) {
+            for (j = 0; j < files[PredictInputName].length; j++) {
+              oldPath = "./" + files[PredictInputName][j].path
+              newPath = "./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n + "/" + files[PredictInputName][j].name
+              fs.renameSync(oldPath, newPath);
+            }
+          } else {
+            oldPath = "./" + files[PredictInputName].path
+            newPath = "./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n + "/" + files[PredictInputName].name
             fs.renameSync(oldPath, newPath);
           }
-        } else {
-          oldPath = "./" + files[PredictInputName].path
-          newPath = "./uploads/" + mid + "/Predict_" + timeStampId + "/file" + n + "/" + files[PredictInputName].name
-          fs.renameSync(oldPath, newPath);
+          n++;
         }
-        n++;
       }
+    } catch (error) {
+      console.log("Submitted form data error..")
+      res.json({ "results": "Submitted form data error" });
+      return;
     }
 
 
@@ -322,11 +336,11 @@ exports.doPredictModel = function (req, res) {
 }
 
 
-
-exports.getH5 =async function (req, res) {
+//////////////////////below codes not in use /////////////////////////////////
+exports.getH5 = async function (req, res) {
   var mid = req.params.mid;
   if (mid == "5e8add664840065c3c09e8d1") {
-    await ndt_Pores.getH5(mid,(data)=>{
+    await ndt_Pores.getH5(mid, (data) => {
       res.json({ "results": data });
     });
   }

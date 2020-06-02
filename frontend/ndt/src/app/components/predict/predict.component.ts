@@ -63,7 +63,13 @@ export class PredictComponent implements OnInit {
     console.log("=================================")
     console.log(this.modelForm.value)
     this.modelService.predictModel(this.modelId,this.formData).subscribe(data=>{
-      console.log(data)
+      if(data.results=="ok"){
+        console.log("Submit ok")
+      }else{
+        alert("Submit error: "+data.results)
+        console.log("Submit error:"+data.results)
+      }
+      
     })
   }
 

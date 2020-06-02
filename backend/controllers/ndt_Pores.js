@@ -23,12 +23,13 @@ function getModelServerInfo(modelId) {
   }
 }
 
-exports.trainModel =  function (modelId, timeStampId,parameters,callback) {
+exports.trainModel = function (modelId, timeStampId, parameters, callback) {
   var conn = new Client();
   var sftp = new SFTPClient();
   getModelServerInfo(modelId);
   // console.log(ssh_config);
-  console.log(parameters)
+  // console.log(parameters)
+
   // var ss=getParamsString(modelId,parameters)
   // console.log('*********************ss:')
   // console.log(ss)
@@ -40,25 +41,24 @@ exports.trainModel =  function (modelId, timeStampId,parameters,callback) {
     return sftp.mkdir(serverInfo.fileUpladPath + timeStampId + "_Masks", true)
   }).then((res) => {
     console.log(res);
-    return sftp.uploadDir('D:\\NDT\\backend\\uploads\\'+modelId+'\\Train_' + timeStampId + '\\file1', serverInfo.fileUpladPath + timeStampId + "_Images");
+    return sftp.uploadDir('D:\\NDT\\backend\\uploads\\' + modelId + '\\Train_' + timeStampId + '\\file1', serverInfo.fileUpladPath + timeStampId + "_Images");
   }).then((res) => {
     console.log(res);
-    return sftp.uploadDir('D:\\NDT\\backend\\uploads\\'+modelId+'\\Train_' + timeStampId + '\\file2', serverInfo.fileUpladPath + timeStampId + "_Masks");
+    return sftp.uploadDir('D:\\NDT\\backend\\uploads\\' + modelId + '\\Train_' + timeStampId + '\\file2', serverInfo.fileUpladPath + timeStampId + "_Masks");
   }).then((res) => {
     console.log(res);
     console.log("all the files uploaded successful..")
     conn.connect(ssh_config)
   }).catch(err => {
-    console.log("catch error:")
+    console.log("sftp catched errors:")
     console.log(err)
+    callback("sftp connection error")
   })
-
   sftp.on('upload', info => {
     console.log(`Listener: Uploaded ${info.source}`);
   })
   sftp.on('close', function () {
     console.log("sftp connetion closing...");
-    callback("ok")
   })
   sftp.on("error", function (err) {
     console.log("=============sftp connection error==============")
@@ -66,23 +66,20 @@ exports.trainModel =  function (modelId, timeStampId,parameters,callback) {
     conn.end();
   });
 
-
-
-
-  //********************************************************** */
-  // conn.connect(ssh_config);
+  //*************************** Execute Python ******************************* */
 
   conn.on('ready', function () {
     console.log('Client :: ready');
-    // conn.exec('cd /d D:\\NDT\\backend\\uploads\\5e8add664840065c3c09e8d1 && dir', function (err, stream) {
-    conn.exec('dir', function (err, stream) {
+    conn.exec('ls', function (err, stream) {
       if (err) throw err;
       stream.on('close', function (code, signal) {
         console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-        conn.end();
-        sftp.end();
+
       }).on('data', function (data) {
         console.log('STDOUT: ' + data);
+        callback("ok")
+        conn.end();
+        sftp.end();
       }).stderr.on('data', function (data) {
         console.log('STDERR: ' + data);
       });
@@ -93,71 +90,27 @@ exports.trainModel =  function (modelId, timeStampId,parameters,callback) {
     console.log(err)
     conn.end();
   });
-
   conn.on('close', function () {
     console.log("ssh connection close...")
   })
-  //********************************************************** */
 
-
-
-  // conn.on('ready', function() {
-  //     console.log('Client :: ready');
-  //     conn.shell(function(err, stream) {
-  //       if (err) throw err;
-  //       stream.on('close', function() {
-  //         console.log('Stream :: close');
-  //         conn.end();
-  //       }).on('dir', function(data) {
-  //         console.log('OUTPUT: ' + data);
-  //       });
-  //       stream.end('dir');
-  //     });
-  //   }).connect(ssh_config);
-
-
-
-  // conn.on('ready',function (err,stream) {
-  // console.log('Client :: ready');
-  // if (err) throw err;
-
-  // stream.on('close', function() {
-  //   console.log('Stream :: close');
-  //   conn.end();
-  // }).on('data', function(data) {
-  //   console.log('OUTPUT: ' + data);
-  // });
-  // stream.end('dir');
-
-
-  // conn.exec('D:;cd D:\\NDT\\backend\\uploads\\5e8add664840065c3c09e8d1; dir >1.txt', function (err, stream) {
-  //     if (err) throw err;
-  //     stream.on('close', function (code, signal) {
-  //         conn.end();
-  //     }).on('data', function (data) {
-  //         console.log('STDOUT: ' + data);
-  //     }).stderr.on('data', function (data) {
-  //         console.log('STDERR: ' + data);
-  //     });
-  // });
-  // }).connect(ssh_config);
 
 }
 
 
-function getParamsString(modelId,parameters){
+function getParamsString(modelId, parameters) {
   getModelServerInfo(modelId);
-  var params=serverInfo.paramString
-  var finalString="";
-  for(var i=0;i<params.length;i++){
-    for(var j=0;j<parameters.length;j++){
-      if(parameters[j].name==params[i]){
-        if(parameters[j].type=="CheckBox"){
+  var params = serverInfo.paramString
+  var finalString = "";
+  for (var i = 0; i < params.length; i++) {
+    for (var j = 0; j < parameters.length; j++) {
+      if (parameters[j].name == params[i]) {
+        if (parameters[j].type == "CheckBox") {
           parameters[j].answer.forEach(element => {
-            finalString=finalString+element+" ";
+            finalString = finalString + element + " ";
           });
-        }else{
-          finalString=finalString+parameters[j].answer+" ";
+        } else {
+          finalString = finalString + parameters[j].answer + " ";
         }
         break;
       }
@@ -166,7 +119,7 @@ function getParamsString(modelId,parameters){
   return finalString;
 }
 
-exports.predict = function (modelId, timeStampId) {
+exports.predict = function (modelId, timeStampId,callback) {
 
 }
 
@@ -174,18 +127,19 @@ exports.getH5 = function (modelId, callback) {
   console.log("============= Get H5 files ================")
   var conn = new Client();
   getModelServerInfo(modelId);
-  var output="";
+  var h5List = "";
   conn.connect(ssh_config);
-  conn.on('ready',function () {
+  conn.on('ready', function () {
     console.log('Client :: ready');
-    conn.exec('cd /d '+serverInfo.workDir+' && dir /b *.h5',function (err, stream) {
+    // conn.exec('cd /d ' + serverInfo.H5Path + ' && dir /b *.h5', function (err, stream) {
+    conn.exec('cd ' + serverInfo.H5Path + ';ls *.h5', function (err, stream) {
       if (err) throw err;
       stream.on('close', function (code, signal) {
         console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
         conn.end();
       }).on('data', function (data) {
         console.log('STDOUT: ' + data);
-        output=output+data;
+        h5List = h5List + data;
       }).stderr.on('data', function (data) {
         console.log('STDERR: ' + data);
       });
@@ -196,29 +150,29 @@ exports.getH5 = function (modelId, callback) {
     console.log(err)
     conn.end();
   });
-
   conn.on('close', function () {
     console.log("ssh connection close...")
-    callback(output);
+    callback(h5List);
   })
 }
 
-exports.getTrainResult = function(modelId,callback){
+exports.getTrainResult = function (modelId, callback) {
   console.log("============= Get Training Output ================")
   var conn = new Client();
   getModelServerInfo(modelId);
-  var output="";
+  var output = "";
   conn.connect(ssh_config);
-  conn.on('ready',function () {
+  conn.on('ready', function () {
     console.log('Client :: ready');
-    conn.exec('cd /d '+serverInfo.workDir+' && type train_out1.txt',function (err, stream) {
+    // conn.exec('cd /d ' + serverInfo.workDir + ' && type train_out1.txt', function (err, stream) {
+    conn.exec('cd ' + serverInfo.workDir + ';cat train_out.txt', function (err, stream) {
       if (err) throw err;
       stream.on('close', function (code, signal) {
         console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
         conn.end();
       }).on('data', function (data) {
-        console.log('STDOUT: ' + data);
-        output=output+data;
+        // console.log('STDOUT: ' + data);
+        output = output + data;
       }).stderr.on('data', function (data) {
         console.log('STDERR: ' + data);
       });
@@ -229,7 +183,6 @@ exports.getTrainResult = function(modelId,callback){
     console.log(err)
     conn.end();
   });
-
   conn.on('close', function () {
     console.log("ssh connection close...")
     callback(output);
@@ -237,12 +190,12 @@ exports.getTrainResult = function(modelId,callback){
 }
 
 
-exports.testssh = function(req,result){
+exports.testssh = function (req, result) {
   var sftp = new SFTPClient();
   getModelServerInfo("5e8add664840065c3c09e8d1");
   sftp.connect(ssh_config).then(() => {
     return sftp.mkdir("/home/wanglong/mytest_Images", true)
-  }).then((res)=>{
+  }).then((res) => {
     console.log(res);
     let rslt2 = sftp.uploadDir('D:\\NDT\\backend\\uploads\\5e8add664840065c3c09e8d1\\Train_1588934665455\\file1', "/home/wanglong/mytest_Images");
     return rslt2;
@@ -266,5 +219,5 @@ exports.testssh = function(req,result){
   sftp.on('upload', info => {
     console.log(`Listener: Uploaded ${info.source}`);
   })
-  
+
 }

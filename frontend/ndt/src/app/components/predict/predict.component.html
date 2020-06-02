@@ -10,7 +10,7 @@
             </mat-label>
 
             <!-- File -->
-            <input type="file" formControlName="answer" *ngIf="input.type == 'File'" (change)="selectFiles($event,input.name)" multiple required>
+            <input type="file" formControlName="answer" *ngIf="input.type == 'File'" (change)="selectFiles($event,input.name)" multiple >
 
             <!-- Number  -->
             <mat-form-field *ngIf="input.type == 'Number'" appearance="outline">
