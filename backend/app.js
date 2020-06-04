@@ -15,14 +15,14 @@ var ServerConfig = require('./ServerConfig')
 
 var mongoConnection=ServerConfig.MongoConnectionString;
 
-var privateKey  = fs.readFileSync('./certificate/private.key','utf8');
-var certificate = fs.readFileSync('./certificate/mydomain.crt','utf8');
-var credentials = {key: privateKey, cert: certificate};
+// var privateKey  = fs.readFileSync('./certificate/private.key','utf8');
+// var certificate = fs.readFileSync('./certificate/mydomain.crt','utf8');
+// var credentials = {key: privateKey, cert: certificate};
 
 var app=express();
 
-var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
+// var httpServer = http.createServer(app);
+// var httpsServer = https.createServer(credentials, app);
 
 
 app.use(cors())
@@ -34,19 +34,21 @@ mongoose.connect(mongoConnection,{ useNewUrlParser: true, useUnifiedTopology: tr
 // mongoose.connect('mongodb://192.168.0.54/EventManagementSystem');
 
 
-app.get ("/svr/model",                     mainCtrl.showIndex);
-// app.get("/sendemail",                  mainCtrl.sendEmail)
-app.post("/svr/model",                     mainCtrl.doAddModel)
-app.put("/svr/model/:mid",                 mainCtrl.doEditModel)
-app.delete("/svr/model/:mid",              mainCtrl.doDeleteModel)
-app.get("/svr/model/:mid",                 mainCtrl.getModelDetail)
-// app.post("/checkin",                   mainCtrl.checkin)
-app.post("/svr/model/train/:mid",          mainCtrl.doTrainModel)
-app.post("/svr/model/predict/:mid",        mainCtrl.doPredictModel)
-app.get("/svr/model/trainResult/:mid",     mainCtrl.getTrainResult)
-app.get("/svr/model/H5/:mid",              mainCtrl.getH5)
+app.get ("/svr/model",                                      mainCtrl.showIndex);
+app.post("/svr/model",                                      mainCtrl.doAddModel)
+app.put("/svr/model/:mid",                                  mainCtrl.doEditModel)
+app.delete("/svr/model/:mid",                               mainCtrl.doDeleteModel)
+app.get("/svr/model/:mid",                                  mainCtrl.getModelDetail)
+app.get("/svr/model/edit/:mid",                             mainCtrl.getEditModelDetail)
 
-app.post("/svr/testssh",                   ndt_Pores.testssh)
+app.post("/svr/model/train/:mid",                           mainCtrl.doTrainModel)
+app.post("/svr/model/predict/:mid",                         mainCtrl.doPredictModel)
+app.get("/svr/model/trainResult/:mid",                      mainCtrl.getTrainResult)
+app.get("/svr/model/H5/:mid",                               mainCtrl.getH5)
+app.get("/svr/model/predictResult/:mid/:timeStampId",       mainCtrl.getPredictResult)
+
+
+// app.post("/svr/testssh",                                    ndt_Pores.testssh)
 
 
 app.use(express.static("public"));
@@ -64,13 +66,15 @@ app.use(function(req,res){
 });
 
 
-// app.listen(3000);
-// console.log("server is running on port 3000..");
-
-httpServer.listen(3000, function() {
+app.listen(3000,()=>{
     console.log('HTTP Server is running on: http://localhost:3000');
 });
-httpsServer.listen(3001, function() {
-    console.log('HTTPS Server is running on: https://localhost:3001');
-});
+
+
+// httpServer.listen(3000, function() {
+//     console.log('HTTP Server is running on: http://localhost:3000');
+// });
+// httpsServer.listen(3001, function() {
+//     console.log('HTTPS Server is running on: https://localhost:3001');
+// });
 

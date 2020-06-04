@@ -60,11 +60,18 @@ export class PredictComponent implements OnInit {
 
   onSubmit(){
     this.formData.append('textInputs',JSON.stringify(this.modelForm.value));
-    console.log("=================================")
-    console.log(this.modelForm.value)
+    // console.log("=================================")
+    // console.log(this.modelForm.value)
     this.modelService.predictModel(this.modelId,this.formData).subscribe(data=>{
       if(data.results=="ok"){
-        console.log("Submit ok")
+        console.log("Submit ok, processing data..")
+
+        this.modelService.getPredictResult(this.modelId,data.timeStampId).subscribe(data=>{
+          if(data.results=="" || data.results.length==0){
+            alert("Cannot get predict results")
+          }
+          console.log("check folder for results...haha")
+        })
       }else{
         alert("Submit error: "+data.results)
         console.log("Submit error:"+data.results)

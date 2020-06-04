@@ -39,6 +39,18 @@ exports.showIndex = function (req, res) {
   })
 }
 
+exports.getEditModelDetail = function (req, res) {
+  console.log("-----------GET Edit Model Detail--------------")
+  var mid = req.params.mid;
+  console.log("Model ID:" + mid)
+  CNN_Model.find({ "_id": mid }, async function (err, results) {
+    if (err || results.length == 0) {
+      res.json({ "results": -1 });
+      return;
+    }
+    res.json({ "results": results[0] });
+  })
+}
 
 
 exports.getModelDetail = function (req, res) {
@@ -52,21 +64,20 @@ exports.getModelDetail = function (req, res) {
     }
 
     //******************Get H5 for models***************** */
-    if (mid == "5e8add664840065c3c09e8d1") {
+    if (mid == "5e8d94e200bc28e910a8a24a") {
       await ndt_Pores.getH5(mid, (data) => {
         if (data == "" || data.length == 0) {
           console.log("cannot find H5")
         } else {
           //**********for ubuntu************** */
           var h5 = data.split('\n');
-          //**********for ubuntu************** */
-
           //**********for windows************** */
           // var h5=data.split('\r\n');
-          // h5=h5.slice(0, h5.length-1);
-          //**********for windows************** */
+
+          h5=h5.slice(0, h5.length-1);
           console.log(h5)
-          results[0].trainingInputs[4].options = h5
+          results[0].trainingInputs[6].options = h5
+          results[0].predictInputs[1].options = h5
         }
         res.json({ "results": results[0] });
       })
@@ -206,7 +217,7 @@ exports.doTrainModel = function (req, res) {
       return;
     }
 
-    if (mid == "5e8add664840065c3c09e8d1") {
+    if (mid == "5e8d94e200bc28e910a8a24a") {
       await ndt_Pores.trainModel(mid, timeStampId, parameters, (data) => {
         if (data == "ok") {
           console.log("MainCtrl: start training ok")
@@ -215,18 +226,12 @@ exports.doTrainModel = function (req, res) {
           console.log("MainCtrl: sftp connection error..")
           res.json({ "results": data });
         }
-
-      });
-    }
-    else if (mid == "5e8d94e200bc28e910a8a24a") {
-      await ndt_Pores.trainModel(mid, timeStampId, parameters, (data) => {
-        console.log("start training ok")
-        res.json({ "results": data });
       });
     }
     else if (mid == "5e8add664840065c3c09e8d1") {
       console.log("go to model cracks>>>>>>>>>>>>>>>")
-      ndt_Cracks.trainModel(mid, timeStampId);
+      res.json({ "results": "not config yet" });
+      return;
     }
     else {
       res.json({ "results": "not config yet" });
@@ -241,12 +246,7 @@ exports.doTrainModel = function (req, res) {
 
 exports.getTrainResult = async function (req, res) {
   var mid = req.params.mid;
-  if (mid == "5e8add664840065c3c09e8d1") {
-    await ndt_Pores.getTrainResult(mid, (data) => {
-      res.json({ "results": data });
-    });
-  }
-  else if (mid == "5e8d94e200bc28e910a8a24a") {
+  if (mid == "5e8d94e200bc28e910a8a24a") {
     await ndt_Pores.getTrainResult(mid, (data) => {
       res.json({ "results": data });
     });
@@ -275,7 +275,7 @@ exports.doPredictModel = function (req, res) {
   form.maxFileSize = 200 * 1024 * 1024; //total file max size = 200MB
 
 
-  form.parse(req,async function (err, fields, files) {
+  form.parse(req, async function (err, fields, files) {
     if (err) {
       console.log("============== errors  =================")
       console.log(err)
@@ -299,6 +299,11 @@ exports.doPredictModel = function (req, res) {
           console.log("created new predict folder" + n)
           n++;
         }
+      }
+
+      if (!fs.existsSync("./uploads/" + mid + "/Result_" + timeStampId)) {
+        fs.mkdirSync("./uploads/" + mid + "/Result_" + timeStampId, { recursive: true })
+        console.log("created new result folder" + n)
       }
 
       // console.log("==============rename and relocate uploaded files....=================")
@@ -327,19 +332,46 @@ exports.doPredictModel = function (req, res) {
       return;
     }
 
-
-
-    res.json({ "results": "ok" });
+   if (mid == "5e8d94e200bc28e910a8a24a") {
+      await ndt_Pores.predict(mid, timeStampId, parameters, (data) => {
+        console.log("start predict ok")
+        res.json({ "results": data, "timeStampId": timeStampId });
+      });
+    } else {
+      console.log(">>>>>>>>>>> model not config yet >>>>>>>>>>>")
+      res.json({ "results": "not config yet" });
+      return;
+    }
   });
+}
 
+exports.getPredictResult = async function (req, res) {
+  var mid = req.params.mid;
+  var timeStampId = req.params.timeStampId;
+
+ if (mid == "5e8d94e200bc28e910a8a24a") {
+    await ndt_Pores.getPredictResult(mid, timeStampId, (data) => {
+      res.json({ "results": data });
+      return;
+    });
+  }
+  else if (mid == "5e8add664840065c3c09e8d1") {
+    res.json({ "results": "not config yet" });
+    console.log(">>>>>>>>>>> model not config yet >>>>>>>>>>>")
+    return;
+  }
+  else {
+    res.json({ "results": "not config yet" });
+    console.log(">>>>>>>>>>> model not config yet >>>>>>>>>>>")
+    return;
+  }
 
 }
 
 
-//////////////////////below codes not in use /////////////////////////////////
 exports.getH5 = async function (req, res) {
   var mid = req.params.mid;
-  if (mid == "5e8add664840065c3c09e8d1") {
+  if (mid == "5e8d94e200bc28e910a8a24a") {
     await ndt_Pores.getH5(mid, (data) => {
       res.json({ "results": data });
     });
@@ -353,62 +385,5 @@ exports.getH5 = async function (req, res) {
     console.log(">>>>>>>>>>> model not config yet >>>>>>>>>>>")
     return;
   }
-
-}
-
-
-
-exports.checkin = function (req, res) {
-  console.log("==============user check in=================")
-
-  eid = req.body.eid;
-  qrcode = req.body.qrcode;
-
-  UserEvent.validationCheck(eid, qrcode, function (results) {
-
-    if (results.code < 0) {
-      console.log(results.code);
-      res.json({ "results": results.code });
-
-    } else {
-      var d = new Date();
-      UserEvent.findByIdAndUpdate(qrcode, { $push: { Attendance: d } }, function (err, response) {
-        if (err) {
-          console.log(results.code);
-          res.json({ "results": -3 });     //update mongoDB fail 
-          return;
-        }
-
-        User.findById(results.user[0].UserId, function (error, data) {
-          if (error) {
-            console.log(results.code);
-            res.json({ "results": -3 });     //update mongoDB fail 
-            return;
-          }
-          console.log(results.code);
-
-          // console.log(data)
-          if (!data) {
-            res.json({ "results": -3 });
-            return;
-          }
-          var qrCodeContent = {
-            Name: data.Name,
-            Company: data.Company,
-            Email: data.Email,
-            Mobiles: data.Mobiles
-          }
-
-          UserEvent.findById(qrcode, function (e, details) {
-            console.log("--------------presurvey details---------")
-            console.log(details.PreEventSurvey)
-
-            res.json({ "results": results.code, "user": qrCodeContent, "PreEventSurvey": details.PreEventSurvey });   //check-in ok
-
-          })
-        })
-      })
-    }
-  })
 
 }

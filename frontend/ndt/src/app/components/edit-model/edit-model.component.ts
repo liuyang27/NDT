@@ -36,7 +36,7 @@ export class EditModelComponent implements OnInit,AfterContentChecked {
 
 
   getModelDetail(id) {
-    this.modelService.getModelById(id).subscribe((data) => {
+    this.modelService.getEditModelById(id).subscribe((data) => {
       var modeldata = data.results;
       // console.log(modeldata)
 

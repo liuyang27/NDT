@@ -69,7 +69,7 @@ export class TrainModelComponent implements OnInit {
     this.modelService.trainModel(this.modelId,this.formData).subscribe(data=>{
       if(data.results=="ok"){
         console.log("Submit ok")
-        this.getOutput();
+        this.getTrainOutput();
       }else{
         alert("Submit error: "+data.results)
         console.log("Submit error:"+data.results)
@@ -79,7 +79,7 @@ export class TrainModelComponent implements OnInit {
   }
 
 
-  getOutput(){
+  getTrainOutput(){
     this.modelService.getTrainOutput(this.modelId).subscribe(data=>{
       if(data.results=="" || data.results.length==0){
         alert("Cannot get train results")
@@ -91,7 +91,7 @@ export class TrainModelComponent implements OnInit {
   autoRefreshEnable(event){
     if(event.checked==true){
       this.autoRefreshId = setInterval(()=>{
-        this.getOutput();
+        this.getTrainOutput();
       }, 30000);
     }else{
       clearInterval(this.autoRefreshId);

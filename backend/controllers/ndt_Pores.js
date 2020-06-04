@@ -27,24 +27,20 @@ exports.trainModel = function (modelId, timeStampId, parameters, callback) {
   var conn = new Client();
   var sftp = new SFTPClient();
   getModelServerInfo(modelId);
-  // console.log(ssh_config);
-  // console.log(parameters)
 
-  // var ss=getParamsString(modelId,parameters)
-  // console.log('*********************ss:')
-  // console.log(ss)
+  var paramString_train = getParamsString(modelId, parameters, "train")
 
   sftp.connect(ssh_config).then(() => {
-    return sftp.mkdir(serverInfo.fileUpladPath + timeStampId + "_Images", true)
+    return sftp.mkdir(serverInfo.fileUpladPath_train + timeStampId + "_Images", true)
   }).then((res) => {
     console.log(res);
-    return sftp.mkdir(serverInfo.fileUpladPath + timeStampId + "_Masks", true)
+    return sftp.mkdir(serverInfo.fileUpladPath_train + timeStampId + "_Masks", true)
   }).then((res) => {
     console.log(res);
-    return sftp.uploadDir('D:\\NDT\\backend\\uploads\\' + modelId + '\\Train_' + timeStampId + '\\file1', serverInfo.fileUpladPath + timeStampId + "_Images");
+    return sftp.uploadDir('D:\\NDT\\backend\\uploads\\' + modelId + '\\Train_' + timeStampId + '\\file1', serverInfo.fileUpladPath_train + timeStampId + "_Images");
   }).then((res) => {
     console.log(res);
-    return sftp.uploadDir('D:\\NDT\\backend\\uploads\\' + modelId + '\\Train_' + timeStampId + '\\file2', serverInfo.fileUpladPath + timeStampId + "_Masks");
+    return sftp.uploadDir('D:\\NDT\\backend\\uploads\\' + modelId + '\\Train_' + timeStampId + '\\file2', serverInfo.fileUpladPath_train + timeStampId + "_Masks");
   }).then((res) => {
     console.log(res);
     console.log("all the files uploaded successful..")
@@ -65,12 +61,13 @@ exports.trainModel = function (modelId, timeStampId, parameters, callback) {
     console.log(err)
     conn.end();
   });
-
   //*************************** Execute Python ******************************* */
-
   conn.on('ready', function () {
     console.log('Client :: ready');
-    conn.exec('ls', function (err, stream) {
+    var cmd = "cd " + serverInfo.workDir + "; /home/wanglong/anaconda3/bin/python UNet_training.py " + timeStampId + " " + paramString_train + " > train_out.txt 2>&1";
+    console.log(cmd)
+    conn.exec('dir', function (err, stream) {
+      // conn.exec(cmd, function (err, stream) {
       if (err) throw err;
       stream.on('close', function (code, signal) {
         console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
@@ -94,13 +91,18 @@ exports.trainModel = function (modelId, timeStampId, parameters, callback) {
     console.log("ssh connection close...")
   })
 
-
 }
 
 
-function getParamsString(modelId, parameters) {
+function getParamsString(modelId, parameters, trainOrPredict) {
   getModelServerInfo(modelId);
-  var params = serverInfo.paramString
+  var params;
+  if (trainOrPredict == "train") {
+    params = serverInfo.paramString_train
+  } else {
+    params = serverInfo.paramString_predict
+  }
+
   var finalString = "";
   for (var i = 0; i < params.length; i++) {
     for (var j = 0; j < parameters.length; j++) {
@@ -119,7 +121,87 @@ function getParamsString(modelId, parameters) {
   return finalString;
 }
 
-exports.predict = function (modelId, timeStampId,callback) {
+exports.predict = function (modelId, timeStampId, parameters, callback) {
+  var conn = new Client();
+  var sftp = new SFTPClient();
+  getModelServerInfo(modelId);
+
+  var paramString_predict = getParamsString(modelId, parameters, "predict")
+
+  sftp.connect(ssh_config).then(() => {
+    //*******for windows *********/
+    // return sftp.mkdir(serverInfo.fileUpladPath_predict + timeStampId + "\\Images", true);
+
+    //*******for ubuntu *********/
+    return sftp.mkdir(serverInfo.fileUpladPath_predict + timeStampId + "/Images", true)
+
+  }).then((res) => {
+    console.log(res);
+    //*******for windows *********/
+    // return sftp.mkdir(serverInfo.predictResultPath + timeStampId + "\\Images", true);
+
+    //*******for ubuntu *********/
+    return sftp.mkdir(serverInfo.predictResultPath + timeStampId + "/Images", true);
+
+  }).then((res) => {
+    console.log(res);
+    //*******for windows *********/
+    // return sftp.uploadDir('D:\\NDT\\backend\\uploads\\' + modelId + '\\Predict_' + timeStampId + '\\file1', serverInfo.fileUpladPath_predict + timeStampId + "\\Images");
+
+    //*******for ubuntu *********/
+    return sftp.uploadDir('D:\\NDT\\backend\\uploads\\' + modelId + '\\Predict_' + timeStampId + '\\file1', serverInfo.fileUpladPath_predict + timeStampId + "/Images");
+
+  }).then((res) => {
+    console.log(res);
+    console.log("all the files uploaded successful..")
+    conn.connect(ssh_config)
+  }).catch(err => {
+    console.log("sftp catched errors:")
+    console.log(err)
+    callback("sftp connection error")
+  })
+  sftp.on('upload', info => {
+    console.log(`Listener: Uploaded ${info.source}`);
+  })
+  sftp.on('close', function () {
+    console.log("sftp connetion closing...");
+  })
+  sftp.on("error", function (err) {
+    console.log("=============sftp connection error==============")
+    console.log(err)
+    conn.end();
+  });
+
+  //*************************** Execute Python ******************************* */
+  conn.on('ready', function () {
+    console.log('Client :: ready');
+    var cmd = "cd " + serverInfo.workDir + "; /home/wanglong/anaconda3/bin/python segmentation_pores_UNet_24Dec2019.py " + timeStampId + " " + paramString_predict;
+    console.log(cmd)
+    //*******for windows *********/
+    // conn.exec('dir', function (err, stream) {
+    //*******for ubuntu *********/
+    conn.exec(cmd, function (err, stream) {
+      if (err) throw err;
+      stream.on('close', function (code, signal) {
+        console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+        callback("ok")
+        conn.end();
+        sftp.end();
+      }).on('data', function (data) {
+        console.log('STDOUT: ' + data);
+      }).stderr.on('data', function (data) {
+        console.log('STDERR: ' + data);
+      });
+    });
+  });
+  conn.on("error", function (err) {
+    console.log("=============ssh connection error==============")
+    console.log(err)
+    conn.end();
+  });
+  conn.on('close', function () {
+    console.log("ssh connection close...")
+  })
 
 }
 
@@ -131,7 +213,9 @@ exports.getH5 = function (modelId, callback) {
   conn.connect(ssh_config);
   conn.on('ready', function () {
     console.log('Client :: ready');
+    //*******for windows *********/
     // conn.exec('cd /d ' + serverInfo.H5Path + ' && dir /b *.h5', function (err, stream) {
+    //*******for ubuntu *********/
     conn.exec('cd ' + serverInfo.H5Path + ';ls *.h5', function (err, stream) {
       if (err) throw err;
       stream.on('close', function (code, signal) {
@@ -164,7 +248,9 @@ exports.getTrainResult = function (modelId, callback) {
   conn.connect(ssh_config);
   conn.on('ready', function () {
     console.log('Client :: ready');
-    // conn.exec('cd /d ' + serverInfo.workDir + ' && type train_out1.txt', function (err, stream) {
+    //*******for windows *********/
+    //conn.exec('cd /d ' + serverInfo.workDir + ' && type train_out.txt', function (err, stream) {
+    //*******for ubuntu *********/
     conn.exec('cd ' + serverInfo.workDir + ';cat train_out.txt', function (err, stream) {
       if (err) throw err;
       stream.on('close', function (code, signal) {
@@ -188,6 +274,45 @@ exports.getTrainResult = function (modelId, callback) {
     callback(output);
   })
 }
+
+
+exports.getPredictResult = function (modelId, timeStampId, callback) {
+  var conn = new Client();
+  var sftp = new SFTPClient();
+  getModelServerInfo(modelId);
+
+  sftp.connect(ssh_config).then(() => {
+    //*******for windows *********/
+    // return sftp.downloadDir(serverInfo.predictResultPath + timeStampId + "\\Images",'D:\\NDT\\backend\\uploads\\' + modelId + '\\Result_' + timeStampId);
+    //*******for ubuntu *********/
+    return sftp.downloadDir(serverInfo.predictResultPath + timeStampId + "/Images", 'D:\\NDT\\backend\\uploads\\' + modelId + '\\Result_' + timeStampId);
+  }).then((res) => {
+    console.log(res);
+    console.log("all the result files downloaded successful..")
+    callback("ok")
+  }).catch(err => {
+    console.log("sftp catched errors:")
+    console.log(err)
+    callback("sftp connection error")
+  })
+  sftp.on('download', info => {
+    console.log(`Listener: Download ${info.source}`);
+  })
+  sftp.on('close', function () {
+    console.log("sftp connetion closing...");
+  })
+  sftp.on("error", function (err) {
+    console.log("=============sftp connection error==============")
+    console.log(err)
+    conn.end();
+  });
+
+
+
+}
+
+
+
 
 
 exports.testssh = function (req, result) {
