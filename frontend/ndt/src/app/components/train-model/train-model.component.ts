@@ -1,6 +1,7 @@
 import { Component, OnInit,Input, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ModelService } from 'src/app/services/model.service';
+import { NgxSpinnerService } from "ngx-spinner";
 
 @Component({
   selector: 'app-train-model',
@@ -19,7 +20,8 @@ export class TrainModelComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private modelService: ModelService,
-              private ref: ChangeDetectorRef) { }
+              private ref: ChangeDetectorRef,
+              private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
     this.modelId=this.modelData["_id"];
@@ -64,9 +66,16 @@ export class TrainModelComponent implements OnInit {
   }
 
   onSubmit(){
+    this.spinner.show("trainUploadSpinner");
+    setTimeout(() => {
+      this.spinner.hide("trainUploadSpinner");
+    }, 10000);
+
     this.formData.append('textInputs',JSON.stringify(this.modelForm.value));
     console.log(this.modelForm.value)
     this.modelService.trainModel(this.modelId,this.formData).subscribe(data=>{
+      this.spinner.hide("trainUploadSpinner");
+      
       if(data.results=="ok"){
         console.log("Submit ok")
         this.getTrainOutput();

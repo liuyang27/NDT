@@ -1,3 +1,11 @@
+<ngx-spinner name="predictUploadSpinner" size = "medium" type = "ball-clip-rotate-multiple" fullScreen = "true">
+    <p class="loading" > Uploading... </p>
+</ngx-spinner>
+
+<ngx-spinner name="predictProcessSpinner" size = "medium" type = "ball-grid-beat" fullScreen = "true">
+    <p class="loading2" > Processing... </p>
+</ngx-spinner>
+
 <h1>{{modelData.name}}</h1><br>
 
 <form [formGroup]="modelForm" (ngSubmit)="onSubmit()" *ngIf="modelData">

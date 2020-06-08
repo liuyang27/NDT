@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 
 export class ModelService {
 
-  private Server_IP = "http://192.168.1.104:3000/svr";
+  private Server_IP = "http://localhost:3000/svr";
   // private Server_IP;
  
   constructor(private http: HttpClient) {}

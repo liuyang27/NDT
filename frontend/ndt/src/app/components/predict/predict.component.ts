@@ -1,6 +1,9 @@
 import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ModelService } from 'src/app/services/model.service';
+import { NgxSpinnerService } from "ngx-spinner";
+
+
 @Component({
   selector: 'app-predict',
   templateUrl: './predict.component.html',
@@ -15,7 +18,8 @@ export class PredictComponent implements OnInit {
   predictInputs:FormArray;
   constructor(private fb: FormBuilder,
               private modelService: ModelService,
-              private ref: ChangeDetectorRef) { }
+              private ref: ChangeDetectorRef,
+              private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
     this.modelId=this.modelData["_id"];
@@ -59,14 +63,26 @@ export class PredictComponent implements OnInit {
   }
 
   onSubmit(){
+    this.spinner.show("predictUploadSpinner");
+    setTimeout(() => {
+      this.spinner.hide("predictUploadSpinner");
+    }, 10000);
+
     this.formData.append('textInputs',JSON.stringify(this.modelForm.value));
     // console.log("=================================")
     // console.log(this.modelForm.value)
     this.modelService.predictModel(this.modelId,this.formData).subscribe(data=>{
+      this.spinner.hide("predictUploadSpinner");
       if(data.results=="ok"){
-        console.log("Submit ok, processing data..")
+        console.log("Submit ok, processing data..");
+
+        this.spinner.show("predictProcessSpinner");
+        setTimeout(() => {
+          this.spinner.hide("predictProcessSpinner");
+        }, 10000);
 
         this.modelService.getPredictResult(this.modelId,data.timeStampId).subscribe(data=>{
+          this.spinner.hide("predictProcessSpinner");
           if(data.results=="" || data.results.length==0){
             alert("Cannot get predict results")
           }

@@ -22,6 +22,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 const MaterialComponents =[
   MatInputModule,
@@ -33,10 +34,7 @@ const MaterialComponents =[
   MatTableModule,
   MatSortModule,
   MatPaginatorModule,
-  MatDatepickerModule,
-  MatNativeDateModule,
   MatCardModule,
-  MatChipsModule,
   MatIconModule,
   MatSlideToggleModule,
   MatGridListModule,
@@ -47,6 +45,7 @@ const MaterialComponents =[
   MatListModule,
   MatMenuModule,
   MatTabsModule,
+  MatSnackBarModule
 ];
 
 

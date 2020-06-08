@@ -20,7 +20,7 @@ import { ModelDetailComponent } from './components/model-detail/model-detail.com
 import { FormsModule } from '@angular/forms';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-
+import { NgxSpinnerModule } from "ngx-spinner";
 @NgModule({
   declarations: [
     AppComponent,
@@ -44,7 +44,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     ReactiveFormsModule,
     HttpClientModule,
     FormsModule,
-    NgxEchartsModule
+    NgxEchartsModule,
+    NgxSpinnerModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,3 +1,7 @@
+<ngx-spinner name="trainUploadSpinner" size = "medium" type = "ball-clip-rotate-multiple" fullScreen = "true">
+    <p class="loading" > Uploading... </p>
+</ngx-spinner>
+
 <h1>{{modelData.name}}</h1><br>
 
 <form [formGroup]="modelForm" (ngSubmit)="onSubmit()" *ngIf="modelData">
@@ -47,8 +51,6 @@
             </div>
 
         </div>
-
-
         <br>
     </div>
 
@@ -72,8 +74,5 @@
 <pre>
     {{outputData}}
 </pre>
-
-
-
 
 <br><br><br>
